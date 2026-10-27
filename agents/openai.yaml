@@ -1,0 +1,3 @@
+interface:
+  display_name: "Claude 环境审查"
+  short_description: "只读审查环境问题，确认调整清单后再修复和复测；当前为演示骨架"

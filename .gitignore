@@ -1,0 +1,26 @@
+# Local secrets and environment files
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Real machine evidence, reports and backups stay local
+/local/
+/reports/
+/snapshots/
+/backups/
+*.har
+*.pcap
+*.pcapng
+*.log
+*.sqlite
+*.sqlite3
+*.db
+
+# OS and interpreter caches
+.DS_Store
+__pycache__/
+*.py[cod]

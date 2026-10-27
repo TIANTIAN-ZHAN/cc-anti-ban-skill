@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; font-src 'none'; connect-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Claude 环境评分 · 交互演示</title>
+  <!-- 单方案原型：验证“体检 → 分数与影响 → 一次确认修复 → 复测”的理解和操作。所有数据与修改仅存在于当前页面内存。 -->
+  <style>
+    :root{--bg:#111214;--panel:#191b1d;--panel-raised:#222427;--line:#35383b;--line-soft:#2b2e31;--text:#e9eaec;--muted:#b0b3b7;--faint:#91959a;--green:#8abd99;--green-bright:#6eb987;--green-dark:#222d26;--amber:#c8a776;--amber-dark:#2c2822;--blue:#a4b3c0;--radius:10px;--font:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+    *{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:24px}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.6 var(--font);-webkit-font-smoothing:antialiased}button,input{font:inherit}button,a,summary,input{ -webkit-tap-highlight-color:transparent}button,a,summary{touch-action:manipulation}button{cursor:pointer}button:disabled{cursor:wait;opacity:.62}a{color:inherit;text-decoration:none}button,summary,a{outline-offset:5px}button:focus-visible,summary:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #c2c9d1;outline-offset:4px}svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}button svg{pointer-events:none}.hidden,[hidden]{display:none!important}
+    .topbar{border-bottom:1px solid var(--line-soft);height:76px;background:#16181a}.top-inner{max-width:1240px;margin:auto;padding:0 36px;height:100%;display:flex;align-items:center;justify-content:space-between;gap:24px}.brand{display:flex;align-items:center;gap:11px;font-size:17px;font-weight:650;letter-spacing:.04em}.brand-symbol{width:28px;height:30px;color:#c7ccd2;stroke-width:1.5}.nav{display:flex;align-items:center;gap:30px;color:var(--muted);font-size:13px;height:100%}.nav a{height:100%;display:flex;align-items:center;position:relative}.nav a.active{color:var(--text)}.nav a.active:after{content:"";height:2px;background:#aeb5bd;position:absolute;bottom:0;left:0;right:0}.demo-badge{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;border:1px solid #3d4044;border-radius:6px;background:#232528;padding:4px 9px;color:#c1c4c8;font-size:11px;letter-spacing:.06em}.demo-dot{height:5px;width:5px;border-radius:50%;background:#91969c}
+    main{max-width:1240px;margin:0 auto;padding:35px 36px 40px}.page-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:27px}.page-head h1{font-size:30px;font-weight:600;line-height:1.35;letter-spacing:-.035em;margin:0}.subtitle{margin:9px 0 0;color:var(--muted);font-size:13px}.head-actions{display:flex;gap:10px;align-items:center;margin-bottom:3px}.button{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--text);padding:10px 14px;min-height:44px;font-size:13px;font-weight:550;transition:background .15s,border-color .15s,transform .15s}.button:hover{border-color:#676c72;background:#26292c}.button:active{transform:translateY(1px)}.button svg{width:16px;height:16px}.button.primary{color:#1c1e21;background:#dfe3e7;border-color:#dfe3e7}.button.primary:hover{background:#f2f3f4;border-color:#f2f3f4}.button.quiet{border-color:transparent;background:transparent;color:var(--muted)}.button.quiet:hover{background:#26292c;color:var(--text)}.button.link{border:0;background:transparent;padding:8px 0;color:var(--text);min-height:40px}.button.link:hover{color:#f2f3f4}.button.wide{width:100%}
+    .flow{display:flex;align-items:center;gap:14px;font-size:11px;color:var(--faint);margin-bottom:19px}.flow-step{display:flex;align-items:center;gap:7px}.flow-number{display:flex;align-items:center;justify-content:center;width:19px;height:19px;border:1px solid #484c51;border-radius:50%;font-size:10px}.flow-step.done{color:#c4c7cb}.flow-step.done .flow-number{background:#303438;border-color:#53585e;color:#d2d7dd}.flow-step.current{color:var(--text)}.flow-step.current .flow-number{border-color:#b4bdc6;color:#e0e5ea}.flow-line{height:1px;width:28px;background:#3c4045}
+    .overview{display:grid;grid-template-columns:.9fr 1.42fr;gap:0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--panel);position:relative}.score-panel{padding:27px 32px 26px;background:#17191b;border-right:1px solid var(--line);display:flex;flex-direction:column}.panel-kicker{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:11px;letter-spacing:.1em}.panel-kicker svg{width:15px;height:15px}.score-top{display:flex;justify-content:space-between;align-items:center}.info-button{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border:0;background:transparent;color:var(--faint);border-radius:50%}.info-button:hover{background:#2c3034;color:var(--text)}.info-button svg{width:15px;height:15px}.score-line{display:flex;align-items:center;justify-content:center;gap:15px;margin-top:10px}.score-number{font-size:100px;line-height:1.1;font-weight:600;letter-spacing:-.07em;font-variant-numeric:tabular-nums;color:var(--green-bright)}.score-suffix{font-size:15px;color:#94999f;letter-spacing:0;margin-top:34px}.score-grade{background:#26342b;color:#9ac7a7;padding:4px 11px;border:1px solid #405547;border-radius:4px;font-size:13px;font-weight:650;margin-top:15px}.score-title{text-align:center;font-size:16px;margin:7px 0 3px;font-weight:500}.score-description{text-align:center;color:var(--muted);font-size:12px;margin:0 0 22px}.scale{position:relative;height:5px;border-radius:2px;background:linear-gradient(90deg,#b96f66 0%,#baa06d 31%,#9da977 55%,#81ad87 79%,#78b38b 100%);margin:0 2px}.scale-marker{position:absolute;left:83%;top:-5px;width:3px;height:15px;background:#eef0f2;border-radius:3px;transform:translateX(-50%);box-shadow:0 0 0 3px #17191b;transition:left .5s}.scale-ticks{display:flex;justify-content:space-between;color:var(--faint);font-size:10px;padding-top:10px}.region-summary{margin-top:23px;padding-top:17px;border-top:1px solid #34383c;display:flex;align-items:center;justify-content:space-between;font-size:12px}.region-label{display:flex;align-items:center;gap:7px;color:#c3c6ca}.region-label svg{width:15px;height:15px;color:var(--muted)}.small-good{display:flex;align-items:center;gap:5px;color:var(--green);font-size:11px}.small-good svg{width:13px;height:13px}.overview-body{padding:30px 32px 25px;display:flex;flex-direction:column}.summary-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;color:var(--muted);font-size:11px}.sample-environment{display:flex;align-items:center;gap:6px}.sample-environment svg{width:14px;height:14px}.scan-state{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--green)}.scan-state svg{width:13px;height:13px}.overview-body h2{font-size:22px;font-weight:550;letter-spacing:-.02em;line-height:1.45;margin:18px 0 7px}.overview-copy{color:var(--muted);font-size:12px;margin:0;max-width:470px}.stats{display:flex;gap:0;margin:25px 0 24px}.stat{flex:1;border-right:1px solid var(--line);padding-left:24px}.stat:first-child{padding-left:0}.stat:last-child{border:0}.stat strong{font-weight:550;font-size:28px;font-variant-numeric:tabular-nums;line-height:1.2;display:block;margin-bottom:6px}.stat span{font-size:11px;color:var(--muted);display:flex;gap:6px;align-items:center}.status-dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--green)}.stat.warn strong{color:var(--amber)}.stat.warn .status-dot{background:var(--amber)}.stat.unknown strong{color:var(--blue)}.stat.unknown .status-dot{background:var(--blue)}.recommendation{margin-top:auto;border:1px solid #3b3f43;background:#222529;border-radius:6px;padding:13px 15px;display:flex;gap:12px;align-items:center;justify-content:space-between}.recommendation-text{display:flex;gap:9px;align-items:flex-start;font-size:12px;color:#d0d3d7}.recommendation-text small{display:block;color:#9cA1a7;font-size:10px;margin-top:3px}.recommendation .button{padding:9px 13px;min-height:40px;white-space:nowrap;font-size:12px}.overview-foot{font-size:10px;color:var(--faint);margin-top:12px;display:flex;align-items:center;gap:5px}.overview-foot svg{width:12px;height:12px}
+    .section-heading{display:flex;justify-content:space-between;align-items:center;gap:16px;margin:31px 0 14px}.section-title{display:flex;align-items:center;gap:10px}.section-title h2{font-size:17px;font-weight:550;letter-spacing:.01em;margin:0}.section-count{font-size:10px;color:var(--amber);border:1px solid #51483a;background:#2b2823;border-radius:5px;padding:1px 6px}.section-sub{color:var(--faint);font-size:11px}.issues{display:grid;grid-template-columns:1fr 1fr;gap:14px}.issue-card{background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden}.issue-main{padding:18px 19px 15px;display:grid;grid-template-columns:34px 1fr;gap:12px}.issue-icon{width:34px;height:34px;background:#292620;border:1px solid #494033;border-radius:6px;color:var(--amber);display:flex;align-items:center;justify-content:center}.issue-icon svg{width:17px;height:17px}.issue-card.resolved .issue-icon{color:var(--green);background:#253329;border-color:#425b49}.issue-card.pending .issue-icon{color:var(--blue);background:#282d33;border-color:#46515c}.issue-title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px}.issue-title h3{font-size:13px;font-weight:550;margin:0}.impact-badge{font-size:10px;color:var(--amber);white-space:nowrap}.issue-card.resolved .impact-badge{color:var(--green)}.issue-card.pending .impact-badge{color:var(--blue)}.issue-main p{color:var(--muted);font-size:11px;margin:0;line-height:1.8}.issue-detail{border-top:1px solid var(--line-soft);font-size:11px}.issue-detail summary{cursor:pointer;display:flex;align-items:center;justify-content:space-between;min-height:42px;padding:10px 19px 10px 65px;color:#bfc3c8;list-style:none}.issue-detail summary::-webkit-details-marker{display:none}.issue-detail summary:hover{background:#24272a}.issue-detail summary svg{width:13px;height:13px;transition:transform .18s}.issue-detail[open] summary svg{transform:rotate(180deg)}.issue-detail-body{padding:0 19px 16px 65px;color:var(--muted);font-size:11px}.issue-detail-body p{margin:0 0 8px}.issue-detail-body p:last-child{margin-bottom:0}.issue-detail-body b{color:#d6d9dd;font-weight:500}.all-clear{grid-column:1/-1;display:flex;align-items:center;gap:13px;background:#212529;border:1px solid #3e474e;border-radius:8px;padding:18px;color:#d0d5da}.all-clear svg{color:var(--green)}.all-clear p{margin:0;font-size:12px}.all-clear small{display:block;color:var(--muted);margin-top:3px;font-size:11px}
+    .details-tools{display:flex;align-items:center;gap:12px}.filters{display:flex;gap:3px;padding:3px;border:1px solid var(--line);border-radius:8px;background:#151719}.filter{border:0;border-radius:5px;background:transparent;color:var(--faint);padding:5px 12px;min-height:30px;font-size:11px}.filter[aria-pressed="true"]{background:#363a3f;color:#e2e5e8}.filter:hover{color:var(--text)}.checklist{border:1px solid var(--line);border-radius:8px;background:var(--panel);overflow:hidden}.checks-grid{display:grid;grid-template-columns:1fr 1fr}.check-row{border-bottom:1px solid var(--line-soft)}.check-row:nth-child(odd){border-right:1px solid var(--line-soft)}.check-row:nth-last-child(-n+2){border-bottom:0}.check-row summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:11px;min-height:72px;padding:13px 20px}.check-row summary::-webkit-details-marker{display:none}.check-row summary:hover{background:#24272a}.check-icon{color:#a1a6ac;display:flex;align-items:center;justify-content:center;width:28px;height:28px}.check-icon svg{width:18px;height:18px}.check-text{flex:1;min-width:0}.check-text strong{display:block;font-size:12px;font-weight:500;color:#d9dce0}.check-text small{display:block;font-size:10px;color:var(--faint);margin-top:2px}.check-state{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--green);white-space:nowrap}.check-state svg{width:12px;height:12px}.check-state.warn{color:var(--amber)}.check-state.unknown{color:var(--blue)}.check-arrow{width:12px;height:12px;color:#8b9198;margin-left:8px;transition:transform .15s}.check-row[open] .check-arrow{transform:rotate(180deg)}.check-row-body{font-size:11px;color:var(--muted);padding:0 22px 17px 59px;line-height:1.8}.check-row-body p{margin:0}.check-row-body p+p{margin-top:7px}.checklist-empty{padding:24px;color:var(--muted);text-align:center;font-size:12px}.checklist-note{border-top:1px solid var(--line);background:#17191b;color:var(--faint);padding:11px 20px;font-size:10px;display:flex;align-items:center;gap:7px}.checklist-note svg{width:13px;height:13px}
+    .page-footer{display:flex;justify-content:space-between;align-items:center;gap:20px;padding-top:23px;font-size:10px;color:var(--faint)}.footer-note{display:flex;align-items:center;gap:6px}.footer-note svg{width:12px;height:12px}.footer-rule{color:#afb5bc;min-height:32px;border:0;background:transparent;font-size:10px;padding:6px 0;cursor:pointer}.footer-rule:hover{color:var(--text)}.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:10;border:1px solid #565d65;border-radius:7px;background:#2a2f34;color:#eceff2;box-shadow:0 12px 44px #0008;padding:13px 20px;font-size:12px;max-width:calc(100vw - 32px);width:max-content;pointer-events:none}.progress{height:2px;width:100%;position:absolute;top:0;left:0;overflow:hidden;background:#343a40}.progress:after{content:"";display:block;height:100%;width:40%;background:#b7c0c9;animation:scan 1s ease-in-out infinite}.spinning{animation:spin 1.2s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}@keyframes scan{from{transform:translateX(-100%)}to{transform:translateX(350%)}}
+    dialog{color:var(--text);background:#1b1e21;border:1px solid #484e55;border-radius:10px;padding:0;width:min(520px,calc(100vw - 32px));max-height:calc(100dvh - 36px);box-shadow:0 24px 100px #000a}dialog::backdrop{background:#000000b8}.dialog-body{padding:28px}.dialog-heading{display:flex;align-items:center;justify-content:space-between;gap:16px}dialog h2{margin:0;font-size:22px;font-weight:550;line-height:1.4}.close-button{width:32px;height:32px;border:0;border-radius:7px;background:#2b3035;display:flex;align-items:center;justify-content:center;color:var(--muted)}.close-button:hover{color:var(--text);background:#3a4148}.close-button svg{width:17px;height:17px}.dialog-copy{color:var(--muted);font-size:12px;margin:10px 0 20px}.repair-option{position:relative;display:flex;gap:12px;padding:17px 15px;border:1px solid #444c54;background:#252a2f;border-radius:6px;margin-top:10px;cursor:pointer} .repair-option input{accent-color:#d2d9e0;height:17px;width:17px;flex-shrink:0;margin:3px 0 0}.repair-option strong{display:block;font-size:13px;font-weight:500}.repair-option small{display:block;color:var(--muted);font-size:11px;margin-top:5px}.repair-option:has(input:disabled){opacity:.6;cursor:default}.dialog-unknown{margin:17px 0 0;padding:13px 14px;border:1px solid #444b53;border-radius:6px;display:flex;align-items:flex-start;gap:9px;color:var(--muted);font-size:11px}.dialog-unknown svg{width:15px;height:15px;color:var(--blue);margin-top:2px}.dialog-unknown strong{font-weight:500;color:#d2d8de;display:block;margin-bottom:3px}.dialog-footer{background:#171a1d;border-top:1px solid var(--line);padding:17px 28px;display:flex;align-items:center;justify-content:flex-end;gap:10px}.dialog-footer .button{font-size:12px}.rule-list{margin:22px 0;padding:0;list-style:none}.rule-list li{display:flex;justify-content:space-between;gap:15px;padding:11px 0;border-bottom:1px solid var(--line);font-size:12px;color:var(--muted)}.rule-list b{color:var(--text);font-weight:500;white-space:nowrap}.rule-note{font-size:11px;color:var(--muted);line-height:1.9;margin:0}.sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    @media(min-width:1450px){main{padding-top:44px}.page-head{margin-bottom:34px}.score-panel{padding-top:30px;padding-bottom:29px}.overview-body{padding-top:33px;padding-bottom:28px}}
+    @media(max-width:1000px){.top-inner,main{padding-left:24px;padding-right:24px}.overview{grid-template-columns:.95fr 1.25fr}.score-panel{padding-left:24px;padding-right:24px}.overview-body{padding:26px 24px}.overview-body h2{font-size:20px}.recommendation{align-items:flex-start;flex-direction:column;gap:11px}.recommendation .button{width:100%}.score-description{font-size:11px}.stat{padding-left:18px}.issues{gap:12px}.issue-title{align-items:flex-start}.issue-main{padding-left:16px;padding-right:16px;gap:10px}.issue-detail summary{padding-left:60px}.issue-detail-body{padding-left:60px}}
+    @media(max-width:740px){.topbar{height:62px}.top-inner,main{padding-left:20px;padding-right:20px}.top-inner{gap:10px}.brand{font-size:15px;gap:9px}.brand-symbol{width:26px;height:28px}.nav{gap:16px}.nav a{display:none}.demo-badge{font-size:10px}main{padding-top:27px}.page-head{align-items:flex-start;flex-direction:column;gap:18px;margin-bottom:23px}.page-head h1{font-size:27px}.subtitle{font-size:12px;line-height:1.8}.head-actions{width:100%;margin:0}.head-actions .button:not(.quiet){flex:1}.head-actions .quiet{padding-left:0;padding-right:10px}.flow{gap:10px;font-size:10px;margin-bottom:16px}.flow-line{width:23px}.overview{display:flex;flex-direction:column}.score-panel{border-right:0;border-bottom:1px solid var(--line);padding:21px 26px 22px}.score-line{margin-top:5px}.score-number{font-size:98px}.score-description{font-size:12px;margin-bottom:24px}.score-title{margin-top:3px}.region-summary{margin-top:21px}.overview-body{padding:24px}.overview-body h2{font-size:20px;margin-top:17px}.overview-copy{font-size:12px;line-height:1.8}.stats{margin:22px 0}.stat strong{font-size:26px}.recommendation{padding:14px;gap:14px}.recommendation-text{font-size:12px}.recommendation-text small{font-size:10px}.recommendation .button{min-height:43px}.overview-foot{line-height:1.8;align-items:flex-start}.overview-foot svg{margin-top:3px}.section-heading{margin-top:26px;gap:10px}.section-title{gap:7px}.section-title h2{font-size:16px}.section-sub{font-size:10px}.issues{grid-template-columns:1fr;gap:12px}.issue-main{padding:17px;grid-template-columns:34px 1fr;gap:12px}.issue-title h3{font-size:13px}.issue-main p{font-size:11px}.issue-detail summary{padding-left:63px;min-height:44px}.issue-detail-body{padding-left:63px}.details-heading{align-items:flex-start;flex-direction:column;gap:12px}.details-tools{width:100%;justify-content:space-between}.filters{width:100%}.filter{flex:1;min-height:34px}.checks-grid{grid-template-columns:1fr}.check-row:nth-child(odd){border-right:0}.check-row:nth-last-child(-n+2){border-bottom:1px solid var(--line-soft)}.check-row:last-child{border-bottom:0}.check-row summary{padding:14px 16px;min-height:75px;gap:9px}.check-row-body{padding-left:53px;padding-right:18px}.check-arrow{margin-left:2px}.check-text strong{font-size:12px}.check-text small{font-size:10px}.checklist-note{padding:12px 16px;align-items:flex-start;line-height:1.8}.checklist-note svg{margin-top:3px}.page-footer{align-items:flex-start;flex-direction:column;gap:5px;padding-top:20px}.footer-note{align-items:flex-start;line-height:1.8}.footer-note svg{margin-top:3px}.dialog-body{padding:23px 20px}dialog h2{font-size:20px}.dialog-footer{padding:16px 20px}.dialog-footer .primary{flex:1}.repair-option{padding:15px 12px}.toast{font-size:11px;bottom:16px}.rule-list li{font-size:11px}}
+    @media(max-width:380px){.flow{gap:8px}.flow-line{width:12px}.flow-step{gap:5px;white-space:nowrap}.summary-heading{flex-wrap:wrap}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important;animation:none!important}.progress:after{width:100%;transform:none}}
+  </style>
+</head>
+<body>
+  <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
+    <defs>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4 10-10"/></symbol>
+      <symbol id="i-circle-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></symbol>
+      <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></symbol>
+      <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+      <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.4 8a7.5 7.5 0 0 1 12.4-2L20 9M4 15l2.2 3A7.5 7.5 0 0 0 18.6 16"/></symbol>
+      <symbol id="i-shield" viewBox="0 0 24 24"><path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6l8-3Z"/><path d="m8 11 3 3 5-5"/></symbol>
+      <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a17 17 0 0 1 0 18 17 17 0 0 1 0-18Z"/></symbol>
+      <symbol id="i-route" viewBox="0 0 24 24"><circle cx="5" cy="6" r="2"/><circle cx="19" cy="18" r="2"/><path d="M7 6h9a4 4 0 0 1 0 8H8a4 4 0 0 0 0 8m-3-14v10"/></symbol>
+      <symbol id="i-link" viewBox="0 0 24 24"><path d="m10 13 4-4M8.5 15.5l-1 1a4 4 0 1 1-5.7-5.7l4-4a4 4 0 0 1 5.7 0M15.5 8.5l1-1a4 4 0 0 1 5.7 5.7l-4 4a4 4 0 0 1-5.7 0" transform="translate(0 -1) scale(.94)"/></symbol>
+      <symbol id="i-browser" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 9h18M7 6.5h.1M10 6.5h.1m-2 8 2 2 5-5"/></symbol>
+      <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6l4 2"/></symbol>
+      <symbol id="i-language" viewBox="0 0 24 24"><path d="M3 5h12M9 3v2m-4 0c0 7 7 11 9 11M13 5c0 7-7 11-9 11m11 5 4-11 4 11m-6.5-4h5" transform="translate(-1)"/></symbol>
+      <symbol id="i-wave" viewBox="0 0 24 24"><path d="M3 12h4l3-7 4 14 3-7h4"/></symbol>
+      <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v.1"/></symbol>
+      <symbol id="i-alert" viewBox="0 0 24 24"><path d="m12 3 10 17H2L12 3Z"/><path d="M12 9v4m0 3v.1"/></symbol>
+      <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 5v2"/></symbol>
+      <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+      <symbol id="i-minus" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></symbol>
+      <symbol id="i-screen" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8m-4-4v4"/></symbol>
+    </defs>
+  </svg>
+  <header class="topbar">
+    <div class="top-inner">
+      <a class="brand" href="#main" aria-label="环境体检首页"><svg class="brand-symbol" viewBox="0 0 30 34" aria-hidden="true"><path d="m15 2 12 7v15l-12 8-12-8V9l12-7Z"/><path d="m8 17 5 5 9-11"/></svg><span>环境体检</span></a>
+      <nav class="nav" aria-label="页面导航"><a class="active" href="#main">评分概览</a><a href="#checks">检测明细</a><span class="demo-badge"><span class="demo-dot"></span>演示数据</span></nav>
+    </div>
+  </header>
+  <main id="main">
+    <div class="page-head">
+      <div><h1>Claude 环境评分</h1><p class="subtitle">查看连接状态、问题影响和修复建议。</p></div>
+      <div class="head-actions"><button class="button quiet" id="reset">重置演示</button><button class="button" id="scan"><svg aria-hidden="true"><use href="#i-refresh"/></svg><span>重新体检</span></button></div>
+    </div>
+    <div class="flow" aria-label="体检流程">
+      <div class="flow-step done" id="step-1"><span class="flow-number">1</span><span>查看体检</span></div><span class="flow-line"></span>
+      <div class="flow-step current" id="step-2"><span class="flow-number">2</span><span>确认修复</span></div><span class="flow-line"></span>
+      <div class="flow-step" id="step-3"><span class="flow-number">3</span><span>复测验证</span></div>
+    </div>
+    <section class="overview" aria-label="评分概览">
+      <div class="progress" id="progress" hidden></div>
+      <div class="score-panel">
+        <div class="score-top"><span class="panel-kicker"><svg aria-hidden="true"><use href="#i-shield"/></svg>环境健康度</span><button class="info-button" id="score-info" aria-label="查看示例评分规则"><svg aria-hidden="true"><use href="#i-info"/></svg></button></div>
+        <div class="score-line"><strong class="score-number" id="score">83</strong><span class="score-suffix">/ 100</span><span class="score-grade" id="grade">良好</span></div>
+        <p class="score-title" id="score-title">连接可用，还有改善空间</p><p class="score-description" id="score-description">处理 2 项建议，让连接更一致</p>
+        <div class="scale" role="img" id="score-scale" aria-label="示例评分 83 分，满分 100 分"><span class="scale-marker" id="score-marker"></span></div>
+        <div class="scale-ticks" aria-hidden="true"><span>0 需关注</span><span>25</span><span>50</span><span>75</span><span>100 稳定</span></div>
+        <div class="region-summary"><span class="region-label"><svg aria-hidden="true"><use href="#i-globe"/></svg>Claude 支持地区</span><span class="small-good"><svg aria-hidden="true"><use href="#i-circle-check"/></svg>符合 · 示例</span></div>
+      </div>
+      <div class="overview-body">
+        <div class="summary-heading"><span class="sample-environment"><svg aria-hidden="true"><use href="#i-screen"/></svg>示例环境 · 本次体检</span><span class="scan-state" id="scan-state"><svg aria-hidden="true"><use href="#i-circle-check"/></svg>体检完成</span></div>
+        <h2 id="summary-title">整体状态良好，建议优化 2 项</h2><p class="overview-copy" id="summary-copy">主要连接检查已通过。DNS 与浏览器连接设置仍可改善，另有 1 项需要进一步确认。</p>
+        <div class="stats" aria-label="检测结果统计"><div class="stat"><strong id="pass-count">5</strong><span><i class="status-dot"></i>正常</span></div><div class="stat warn"><strong id="warn-count">2</strong><span><i class="status-dot"></i>待改善</span></div><div class="stat unknown"><strong>1</strong><span><i class="status-dot"></i>待确认</span></div></div>
+        <div class="recommendation"><div class="recommendation-text"><div><span id="recommend-title">先处理这 2 项可改善问题</span><small id="recommend-sub">查看调整内容，确认后再执行</small></div></div><button class="button primary" id="repair"><span>查看修复建议</span><svg aria-hidden="true"><use href="#i-arrow"/></svg></button></div>
+        <div class="overview-foot"><svg aria-hidden="true"><use href="#i-lock"/></svg><span>所有操作仅作用于演示，不会更改设备或网络设置。</span></div>
+      </div>
+    </section>
+    <section aria-labelledby="issues-heading">
+      <div class="section-heading"><div class="section-title"><h2 id="issues-heading">需要关注</h2><span class="section-count" id="issues-count">2 项建议</span></div><span class="section-sub" id="issues-sub">按对连接的影响排序</span></div>
+      <div class="issues" id="issues"></div>
+    </section>
+    <section id="checks" aria-labelledby="checks-heading">
+      <div class="section-heading details-heading"><div class="section-title"><h2 id="checks-heading">检测明细</h2><span class="section-sub">8 项检查</span></div><div class="details-tools"><div class="filters" role="group" aria-label="筛选检测项目"><button class="filter" data-filter="all" aria-pressed="true">全部</button><button class="filter" data-filter="attention" aria-pressed="false">需关注</button><button class="filter" data-filter="pass" aria-pressed="false">正常</button></div></div></div>
+      <div class="checklist"><div class="checks-grid" id="checks-grid"></div><div class="checklist-note"><svg aria-hidden="true"><use href="#i-info"/></svg><span>“待确认”表示证据不足，不计作通过；环境分数不代表账号安全或服务方的风控结论。</span></div></div>
+    </section>
+    <footer class="page-footer"><span class="footer-note"><svg aria-hidden="true"><use href="#i-lock"/></svg>交互原型 · 不采集 IP，不连接检测服务，不保存设备信息</span><button class="footer-rule" id="rules">示例评分说明</button></footer>
+  </main>
+  <div id="announcer" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+  <dialog id="repair-dialog" aria-labelledby="repair-title" aria-describedby="repair-description">
+    <form id="repair-form">
+      <div class="dialog-body"><div class="dialog-heading"><h2 id="repair-title">确认这次调整</h2><button type="button" class="close-button" data-close="repair-dialog" aria-label="关闭修复建议"><svg aria-hidden="true"><use href="#i-close"/></svg></button></div><p class="dialog-copy" id="repair-description">选择要处理的项目。这里将模拟设置变更，再由你发起复测。</p>
+        <label class="repair-option"><input type="checkbox" id="fix-dns" name="dns" checked><span><strong>统一 DNS 解析路径</strong><small>让解析请求跟随连接出口，减少地区信息不一致。</small></span></label>
+        <label class="repair-option"><input type="checkbox" id="fix-webrtc" name="webrtc" checked><span><strong>约束浏览器直连路径</strong><small>模拟调整 WebRTC 策略；实际使用时可能影响部分音视频连接。</small></span></label>
+        <div class="dialog-unknown"><svg aria-hidden="true"><use href="#i-info"/></svg><div><strong>UDP 连通性将保留为“待确认”</strong>缺少连接证据，无法通过更改设置直接判定正常。</div></div>
+        <p class="dialog-copy" style="margin:16px 0 0;font-size:11px">仅修改本页演示状态，不会操作真实网络、浏览器或账号。</p>
+      </div>
+      <div class="dialog-footer"><button type="button" class="button quiet" data-close="repair-dialog">暂不调整</button><button type="submit" class="button primary" id="confirm-repair">确认并模拟修复</button></div>
+    </form>
+  </dialog>
+  <dialog id="rules-dialog" aria-labelledby="rules-title">
+    <div class="dialog-body"><div class="dialog-heading"><h2 id="rules-title">分数是怎样组成的？</h2><button class="close-button" data-close="rules-dialog" aria-label="关闭评分规则"><svg aria-hidden="true"><use href="#i-close"/></svg></button></div><p class="dialog-copy">这是一组用于验证界面流程的示例权重。</p><ul class="rule-list"><li><span>示例基础分</span><b>100 分</b></li><li><span>DNS 解析路径不一致</span><b>−7 分</b></li><li><span>浏览器 WebRTC 直连风险</span><b>−5 分</b></li><li><span>UDP 证据不足，暂预留</span><b>−5 分</b></li></ul><p class="rule-note">初始示例为 83 分。两项调整经模拟复测后可达到 95 分，UDP 仍待确认。分数不等于成功率，也不是 Net.Coffee 或 Claude 的官方算法、检测结果或账号判断。</p></div><div class="dialog-footer"><button class="button primary" data-close="rules-dialog">明白了</button></div>
+  </dialog>
+  <script>
+    (() => {
+      'use strict';
+      const $ = id => document.getElementById(id);
+      const icon = name => `<svg aria-hidden="true"><use href="#i-${name}"/></svg>`;
+      const state = { applied: {dns:false,webrtc:false}, verified:{dns:false,webrtc:false}, filter:'all', busy:false, scan:0 };
+      let toastTimer;
+      const items = [
+        {id:'region',name:'出口地区',icon:'globe',sub:'Claude 支持地区',detail:'示例出口位于服务支持的地区。此处只展示判定结果，不展示或读取真实地址。'},
+        {id:'risk',name:'出口 IP 属性',icon:'shield',sub:'风险标记检查',detail:'示例记录：VPN / Proxy 标记已识别，Tor 与滥用标记未见异常。代理标记本身不等同于不可用，也不能推断账号安全。'},
+        {id:'claude',name:'Claude 可用性',icon:'link',sub:'服务连接正常',detail:'示例中的连接检查已通过。这个原型没有向 Claude 发送请求；实际产品还需要分别确认连接、登录与具体功能是否可用。'},
+        {id:'dns',name:'DNS 解析路径',icon:'route',sub:'解析与出口不一致',goodSub:'解析与出口一致',detail:'示例中，DNS 解析路径没有跟随连接出口，可能产生地区信息不一致。建议统一解析路径，再进行复测。',goodDetail:'模拟复测已确认 DNS 解析与连接出口一致。此状态仅适用于本页演示。'},
+        {id:'webrtc',name:'WebRTC 连接',icon:'browser',sub:'浏览器存在直连路径',goodSub:'直连路径已约束',detail:'示例中，浏览器可能绕过代理建立 WebRTC 连接。建议先了解音视频使用需求，再确认调整策略。',goodDetail:'模拟复测已确认浏览器直连路径受到约束。真实环境仍需验证音视频功能与连接行为。'},
+        {id:'udp',name:'UDP 连通性',icon:'wave',sub:'缺少连接证据',detail:'当前示例没有 UDP 的有效连接结果，不能判定正常或异常。此项无法自动修复；真实产品需通过已授权的连接测试补充证据。'},
+        {id:'timezone',name:'设备时区',icon:'clock',sub:'与示例出口地区一致',detail:'示例时区与出口地区一致。原型不会读取或修改设备时区，时区一致也不代表服务一定可用。'},
+        {id:'language',name:'浏览器语言',icon:'language',sub:'语言配置正常',detail:'示例语言配置可正常使用。原型不会读取或更改浏览器语言；语言偏好本身不是账号风险结论。'}
+      ];
+      const issueMeta={
+        dns:{name:'DNS 解析路径不一致',icon:'route',impact:'连接一致性',copy:'解析请求可能走向不同地区，影响连接判断的一致性。',action:'让 DNS 解析跟随当前连接出口。',effect:'减少解析信息与出口地区的差异；仍需复测验证。'},
+        webrtc:{name:'浏览器存在直连路径',icon:'browser',impact:'隐私与连接',copy:'部分浏览器连接可能绕过代理，暴露额外的网络信息。',action:'按音视频需求调整 WebRTC 连接策略。',effect:'减少非预期直连；部分通话应用的连接方式可能改变。'}
+      };
+      const openDialogs = new Map();
+      function announce(message){$('announcer').textContent=message}
+      function toast(message){clearTimeout(toastTimer);$('toast').textContent=message;$('toast').hidden=false;toastTimer=setTimeout(()=>{$('toast').hidden=true},4200)}
+      function status(item){return item.id==='udp'?'unknown':(item.id==='dns'||item.id==='webrtc')&&!state.verified[item.id]?'warn':'pass'}
+      function pending(){return ['dns','webrtc'].some(id=>state.applied[id]&&!state.verified[id])}
+      function score(){return 83+(state.verified.dns?7:0)+(state.verified.webrtc?5:0)}
+      function showDialog(id){openDialogs.set(id,document.activeElement);$(id).showModal()}
+      function closeDialog(id){$(id).close()}
+      document.querySelectorAll('dialog').forEach(dialog=>{
+        dialog.addEventListener('close',()=>{const opener=openDialogs.get(dialog.id);if(opener&&opener.isConnected)opener.focus();openDialogs.delete(dialog.id)});
+        dialog.addEventListener('click',event=>{if(event.target===dialog){const rect=dialog.getBoundingClientRect();if(event.clientX<rect.left||event.clientX>rect.right||event.clientY<rect.top||event.clientY>rect.bottom)dialog.close()}});
+      });
+      document.querySelectorAll('[data-close]').forEach(button=>button.addEventListener('click',()=>closeDialog(button.dataset.close)));
+      function renderIssues(){
+        const opened=new Set(Array.from($('issues').querySelectorAll('details[open]')).map(el=>el.dataset.id));
+        const remaining=['dns','webrtc'].filter(id=>!state.verified[id]);
+        $('issues-count').textContent=remaining.length?`${remaining.length} 项建议`:'已处理';
+        $('issues-sub').textContent=remaining.length?'按对连接的影响排序':'继续关注尚未验证的项目';
+        $('issues').innerHTML=remaining.length?remaining.map(id=>{
+          const data=issueMeta[id],isPending=state.applied[id];
+          return `<article class="issue-card${isPending?' pending':''}"><div class="issue-main"><span class="issue-icon">${icon(data.icon)}</span><div><div class="issue-title"><h3>${data.name}</h3><span class="impact-badge">${isPending?'待复测':data.impact}</span></div><p>${isPending?'模拟调整已完成，等待复测验证实际变化。':data.copy}</p></div></div><details class="issue-detail" data-id="${id}" ${opened.has(id)?'open':''}><summary>查看影响与建议${icon('down')}</summary><div class="issue-detail-body"><p><b>调整建议：</b>${data.action}</p><p><b>可能影响：</b>${data.effect}</p></div></details></article>`;
+        }).join(''):`<div class="all-clear">${icon('circle-check')}<p>2 项建议已通过模拟复测<small>UDP 连通性仍待确认，可在下方查看原因。</small></p></div>`;
+      }
+      function renderChecks(){
+        const opened=new Set(Array.from($('checks-grid').querySelectorAll('details[open]')).map(el=>el.dataset.id));
+        const visible=items.filter(item=>state.filter==='all'||(state.filter==='pass'?status(item)==='pass':status(item)!=='pass'));
+        $('checks-grid').innerHTML=visible.map(item=>{
+          const value=status(item),good=state.verified[item.id],wait=state.applied[item.id]&&!good;
+          const label=value==='pass'?'正常':value==='unknown'?'待确认':wait?'待复测':'待改善';
+          const summary=good?item.goodSub:item.sub;
+          return `<details class="check-row" data-id="${item.id}" ${opened.has(item.id)?'open':''}><summary><span class="check-icon">${icon(item.icon)}</span><span class="check-text"><strong>${item.name}</strong><small>${summary}</small></span><span class="check-state ${value}">${icon(value==='pass'?'circle-check':value==='unknown'?'minus':'alert')}${label}</span>${icon('down').replace('<svg','<svg class="check-arrow"')}</summary><div class="check-row-body"><p>${good?item.goodDetail:item.detail}</p>${wait?'<p>模拟设置已更新，评分将在复测完成后更新。</p>':''}</div></details>`;
+        }).join('');
+        document.querySelectorAll('.filter').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.filter===state.filter)));
+      }
+      function render(){
+        const warnings=2-Number(state.verified.dns)-Number(state.verified.webrtc),isPending=pending(),value=score();
+        $('score').textContent=value;$('score-marker').style.left=`${value}%`;$('score-scale').setAttribute('aria-label',`示例评分 ${value} 分，满分 100 分`);
+        $('grade').textContent=warnings?'良好':'优秀';
+        $('score-title').textContent=warnings?'连接可用，还有改善空间':'主要检查通过，连接更一致';
+        $('score-description').textContent=isPending?'调整已完成，当前为上次体检分数':warnings?`处理 ${warnings} 项建议，让连接更一致`:'2 项改善已验证，1 项仍待确认';
+        $('pass-count').textContent=7-warnings;$('warn-count').textContent=warnings;
+        $('summary-title').textContent=isPending?'调整已完成，接下来复测验证':warnings?`整体状态良好，建议优化 ${warnings} 项`:'已完成优化，仍有 1 项待确认';
+        $('summary-copy').textContent=isPending?'已更新本页的模拟设置。复测会重新核对调整结果，再更新分数和检测明细。':warnings?'主要连接检查已通过。DNS 与浏览器连接设置仍可改善，另有 1 项需要进一步确认。':'DNS 与 WebRTC 已通过模拟复测。UDP 仍缺少连接证据，因此保留“待确认”，不计作通过。';
+        if(warnings===1&&!isPending)$('summary-copy').textContent=`${state.verified.dns?'DNS':'WebRTC'} 已通过模拟复测。另 1 项设置仍可改善，UDP 连通性仍待确认。`;
+        $('recommend-title').textContent=isPending?'现在复测，确认调整结果':warnings?`先处理这 ${warnings} 项可改善问题`:'主要问题已处理';
+        $('recommend-sub').textContent=isPending?'分数将在复测完成后更新':warnings?'查看调整内容，确认后再执行':'未知项仍需补充连接证据';
+        $('repair').querySelector('span').textContent=isPending?'复测并更新评分':warnings?'查看修复建议':'查看待确认项';
+        $('scan-state').innerHTML=icon(isPending?'clock':'circle-check')+(isPending?'等待复测':state.scan?'示例体检完成':'体检完成');
+        $('step-2').className=`flow-step ${isPending||warnings===0?'done':'current'}`;$('step-3').className=`flow-step ${warnings===0?'done':isPending?'current':''}`;
+        renderIssues();renderChecks();
+      }
+      function openRepair(){
+        if(state.busy)return;
+        if(pending()){runScan();return}
+        if(state.verified.dns&&state.verified.webrtc){state.filter='attention';renderChecks();document.querySelector('[data-id="udp"]').open=true;$('checks').scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});document.querySelector('[data-id="udp"] summary').focus({preventScroll:true});return}
+        ['dns','webrtc'].forEach(id=>{$(`fix-${id}`).disabled=state.verified[id];$(`fix-${id}`).checked=!state.verified[id]});
+        updateConfirm();showDialog('repair-dialog');
+      }
+      function updateConfirm(){const count=['dns','webrtc'].filter(id=>$(`fix-${id}`).checked&&!$(`fix-${id}`).disabled).length;$('confirm-repair').disabled=count===0;$('confirm-repair').textContent=count?`确认并模拟修复 ${count} 项`:'请选择要处理的项目'}
+      ['dns','webrtc'].forEach(id=>$(`fix-${id}`).addEventListener('change',updateConfirm));
+      $('repair-form').addEventListener('submit',event=>{
+        event.preventDefault();const selected=['dns','webrtc'].filter(id=>$(`fix-${id}`).checked&&!$(`fix-${id}`).disabled);
+        if(!selected.length)return;selected.forEach(id=>{state.applied[id]=true});closeDialog('repair-dialog');render();toast(`${selected.length} 项模拟调整已完成，复测后更新评分。`);announce('模拟调整完成，当前评分尚未更新，请复测验证。');$('repair').focus();
+      });
+      async function runScan(){
+        if(state.busy)return;const initiator=document.activeElement;state.busy=true;$('progress').hidden=false;['scan','reset','repair'].forEach(id=>{$(id).disabled=true});$('scan').querySelector('svg').classList.add('spinning');$('scan').querySelector('span').textContent='体检中…';$('scan-state').innerHTML=icon('refresh')+'正在核对示例';announce('正在运行示例体检。');
+        const phases=['核对出口与服务连接','核对 DNS 与浏览器路径','整理结果与待确认项'];
+        for(const phase of phases){$('scan-state').innerHTML=icon('refresh')+phase;await new Promise(resolve=>setTimeout(resolve,380))}
+        const before=score();state.verified={...state.applied};state.scan++;state.busy=false;$('progress').hidden=true;['scan','reset','repair'].forEach(id=>{$(id).disabled=false});$('scan').querySelector('svg').classList.remove('spinning');$('scan').querySelector('span').textContent='重新体检';render();
+        const message=score()>before?`模拟复测完成：${before} → ${score()} 分，UDP 仍待确认。`:`示例体检完成：${score()} 分，1 项仍待确认。`;toast(message);announce(message);if(initiator&&initiator.isConnected)initiator.focus({preventScroll:true});
+      }
+      $('scan').addEventListener('click',runScan);$('repair').addEventListener('click',openRepair);
+      $('reset').addEventListener('click',()=>{state.applied={dns:false,webrtc:false};state.verified={dns:false,webrtc:false};state.filter='all';state.scan=0;render();toast('已恢复初始演示：83 分，2 项待改善。');announce('已重置演示，当前 83 分。')});
+      document.querySelectorAll('.filter').forEach(button=>button.addEventListener('click',()=>{state.filter=button.dataset.filter;renderChecks()}));
+      $('score-info').addEventListener('click',()=>showDialog('rules-dialog'));$('rules').addEventListener('click',()=>showDialog('rules-dialog'));
+      render();
+    })();
+  </script>
+</body>
+</html>
