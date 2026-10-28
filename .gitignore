@@ -24,3 +24,11 @@
 .DS_Store
 __pycache__/
 *.py[cod]
+
+# Local Go builds and test products
+/cc-health
+/cc-health-*
+*.test
+coverage.out
+
+.build/
