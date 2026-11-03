@@ -1,79 +1,87 @@
-# CC Anti-Ban
+# CC Anti-Ban | Claude Account First-Aid Kit
 
-**Claude Code stopped working. Is it really a ban?**
+**Claude account banned? What can you do next?**
 
-Check the environment before drawing conclusions. A local macOS diagnostic tool for Claude Code that can start even when Claude itself is not working.
+A guided checklist, evidence organizer and appeal-draft workflow, with a local macOS Claude Code environment tool. It helps you work through the problem; it does not lift account suspensions or claim to have cracked official risk controls.
 
-[中文](README.md) · [Install](INSTALL.md) · [For AI Agents](#for-ai-agents) · [Online check reference](#online-check-reference) · [Discuss an error](#discuss-an-error)
+[中文](README.md) · [Self-check guide](references/self-check.md) · [Install](INSTALL.md) · [For AI Agents](#for-ai-agents) · [Reference pages](#reference-pages)
 
-## Start with what you can verify
+## Choose the right path
 
-Requests time out. Connections fail. Switching proxies still leaves you stuck. Those symptoms alone do not tell you whether an account was suspended.
+| What you see | Where to start |
+| --- | --- |
+| Connection, proxy, installation or authentication errors | Review relevant environment and client evidence; a 403 alone does not establish a ban |
+| Billing, identity verification, subscription or usage prompts | Check the official page yourself; the Agent organizes a redacted summary |
+| An explicit suspension notice | Build a timeline and prepare material for the [official appeal process](https://support.claude.com/en/articles/8241253-safeguards-warnings-and-appeals) |
+| Missing or conflicting information | Preserve uncertainty and ask only for details that change the next step |
 
-**CC Anti-Ban** checks installation, basic configuration and startup proxy selection. When you choose, run one limited reference connection probe. See what passed, what failed and what remains unknown before deciding what to try next.
+The [self-check guide](references/self-check.md) covers seven categories when relevant: error type, client/authentication, actual region/eligibility, recent changes, startup proxy, billing/KYC/subscription/usage, and next action. It is not a mandatory questionnaire.
 
-**Received an explicit account suspension notice?** Use the [official appeal process](https://support.claude.com/en/articles/8241253-safeguards-warnings-and-appeals). This tool cannot determine or reverse an account suspension.
+Agent notes distinguish user-reported information, tool observations, unconfirmed items and items that do not apply. A user's confirmation is not automatically official verification. Third-party reports remain separate sources; no account-risk score is generated or added to the CLI report.
 
-## What you can do
-
-- Locate Claude Code and check its version in a restricted sandbox.
-- Review basic JSON/env configuration and observed proxy conflicts.
-- After confirmation, inspect one reference connection across DNS, TCP/CONNECT, TLS and HTTP.
-- Read an explainable score alongside evidence coverage and explicit unknowns.
-- Preview a loopback HTTP proxy plan for a supported new native Claude process, without changing the original shell or system settings.
-
-A `403` can also reflect missing model or resource permissions; a status code alone does not establish an account ban. See [official Claude Code troubleshooting](https://support.claude.com/en/articles/14552646-troubleshoot-claude-code-installation-and-authentication) and [API errors](https://platform.claude.com/docs/en/api/errors).
-
-There is no active outbound probe by default. Local inspection, a network probe and a new Claude session require separate consent. The tool can start independently of Claude Code.
+The checklist separates official guidance, tool observations, user-reported information and unverified community experience. It does not turn anecdotes into account-scoring rules or treat ordinary same-city network changes as proof of a ban. See [sources and limitations](references/self-check-sources.md). Guides and the local UI are currently Chinese; this page is the English entry.
 
 ## For AI Agents
 
-Use **Codex**, **Kimi Code**, or another Coding Agent with local file and terminal tools, including agents using **DeepSeek** models. Claude Code is the subject of inspection; use a separate agent to install and diagnose it.
-
-Copy this request into your agent:
+Use **Codex**, **Kimi Code**, or another independent Coding Agent with local file and terminal tools, including agents using **DeepSeek** models. **Claude is the subject of inspection.**
 
 ```text
-Install “CC Anti-Ban” from:
+Install “CC Anti-Ban | Claude Account First-Aid Kit” from:
 https://github.com/TIANTIAN-ZHAN/cc-anti-ban-skill
 
-Read INSTALL.md and SKILL.md in the complete repository first. Follow INSTALL.md
-to check prerequisites and build with scripts/build-safe.zsh. Run --help only
-after this build succeeds. Preserve the full repository and existing directories.
-Report missing access or dependencies without requesting plaintext tokens.
+Read INSTALL.md and SKILL.md in the full repository. Check prerequisites,
+build with scripts/build-safe.zsh, and run --help only after this build succeeds.
+Preserve existing directories. Report missing access or dependencies.
 Install the standalone tool only; do not install an Agent Skill automatically.
-Do not run inspections, serve, network probes, Claude or model calls, or change
-system settings. Report the repository/binary paths and build/help results,
-then wait for me to select a project and authorize inspection.
+Do not start a questionnaire, real inspection, serve, network probe or Claude,
+read account material, or change system settings during installation.
+Report the repository/binary paths and build/help results, then wait for my next step.
 ```
 
-**[INSTALL.md is the authoritative procedure](INSTALL.md)** (Chinese, with executable shell blocks). Installation ends at a successful build and `--help`. Optional Codex Skill linking is documented separately. Kimi and other agents can read the complete repository directly; client loading and end-to-end compatibility have not been verified. Do not install this diagnostic Skill into `.claude/skills` or rely on Claude to inspect itself.
+**[INSTALL.md → authoritative commands and optional Codex Skill](INSTALL.md)**
 
-## Online check reference
+After installation, you can ask: “Use the self-check guide to organize the redacted information I have provided. Ask only for relevant gaps and give evidence status and next steps. Start with written analysis, without inspecting my machine, opening testing sites or submitting an appeal.”
 
-> **[Net.Coffee · Claude AI IP risk check →](https://ip.net.coffee/claude/)**
+Installation stops at build and help. Appeals remain drafts unless sending/submission was explicitly authorized; identity verification and payments are handled by the user on official pages. Do not install this diagnostic Skill into `.claude/skills` or rely on Claude to inspect itself. Full client compatibility has not been verified end to end.
+
+## Reference pages
+
+These are three Net.Coffee references. The first two images are **static share covers from the original site, not test reports, this tool's UI or measured results**. The third uses a text preview. Thanks to Net.Coffee for the interface and information-design references; its scoring service is not integrated here.
+
+### 01 · Claude AI IP risk check
+
+<a href="https://ip.net.coffee/claude/"><img src="https://ip.net.coffee/og-image-claude.png" alt="Net.Coffee Claude share cover, not a test report" width="600"></a>
+
+[Open the Claude reference →](https://ip.net.coffee/claude/) · Third-party page; opening it may start checks.
+
+A reference for how the site organizes environment signals, not an Anthropic account-status determination.
+
+### 02 · IP / network information
+
+<a href="https://ip.net.coffee/ip/"><img src="https://ip.net.coffee/og-image.png" alt="Net.Coffee general share cover, not a test report" width="600"></a>
+
+[Open the IP reference →](https://ip.net.coffee/ip/) · Third-party page; opening it may start checks.
+
+Network labels cannot establish a person's actual location or service eligibility.
+
+### 03 · Claude Code environment notes
+
+> **[Net.Coffee · Claude Code reference →](https://ip.net.coffee/claude/claudecode.html)**
 >
-> Thanks to Net.Coffee for the interface inspiration behind our early scoring demo.
+> Third-party topics: IP, DNS, IPv6 and traffic routing for the Claude Code environment. Read alongside the other references; use [official Claude Code documentation](https://code.claude.com/docs/en/network-config) for applicable configuration.
 
-This independent third-party site is not integrated into CC Anti-Ban. Its results are not an Anthropic determination of account status.
+Third-party pages may automatically collect IP/DNS/WebRTC/device information. Viewing a cover or reading a guide does not authorize running those checks. Images use original-site URLs; see [NOTICE](NOTICE.md) for attribution and rights boundaries.
 
-## Get started
+## The included local tool
 
-1. Build the tool and verify `--help` using [INSTALL.md](INSTALL.md).
-2. After consent, select a project and open the local interface. Read the disclosure before starting inspection.
-3. Review or export the redacted report. Confirm a reference probe or new-session proxy plan only when needed.
+`cc-health` reviews installation, basic configuration and startup proxy selection on macOS. Separate consent enables one limited reference probe or a loopback HTTP proxy plan for a supported new Claude process. No active outbound probe occurs by default; the system proxy, original shell and configuration files remain unchanged.
 
-## Discuss an error
+The existing score describes limited reference evidence and coverage. The CLI account field remains unknown with no passing weight. Guided notes do not modify the Report. [Report contract](references/report-contract.md) · [Install](INSTALL.md)
 
-Timeout, connection failure, or a specific error? [Share feedback in Issues](https://github.com/TIANTIAN-ZHAN/cc-anti-ban-skill/issues): describe the symptom, reproduction steps, and which environment checks passed, failed or remained unknown.
+Requires Go 1.25+, clang/SDK and a trusted, already-running zsh. Tested on macOS 27 arm64; older macOS, Intel and full official CLI compatibility are unverified. No prebuilt packages are provided. Local inspection may read credentials in environment/configuration data into memory; raw contents are not sent externally, logged or exported, and immediate erasure is not promised. [Privacy and consent](references/safety-and-privacy.md)
 
-Share redacted excerpts only. Do not upload raw configuration, full environment variables, account details, email addresses, tokens, or proxy/subscription URLs containing credentials. They are not needed for feedback.
+## Feedback
 
-## Scope and requirements
+[Share a redacted issue](https://github.com/TIANTIAN-ZHAN/cc-anti-ban-skill/issues) with symptoms, reproduction steps and unknowns. Do not share account details, email addresses, tokens, identity documents, raw configuration or credential-bearing links.
 
-Requires macOS, Go 1.25+, clang/SDK and a trusted, already-running zsh. Tested on macOS 27 arm64; the 13.0 deployment target is not proof of older macOS or Intel compatibility. No prebuilt packages are provided. Full compatibility with the official Claude CLI remains unverified.
-
-Local inspection enumerates the full process environment and reads a bounded user settings file. These may contain credentials and enter local memory. Raw contents are not sent to external services, logged or exported; immediate memory erasure is not guaranteed. [Privacy and consent](references/safety-and-privacy.md)
-
-Scores describe limited environment and reference-link evidence. They do not validate accounts, region eligibility, quota, models or Claude's effective route. Normal Claude sessions can make their own network requests, write files and run hooks/MCP. [Report contract](references/report-contract.md) · [Agent workflow](SKILL.md)
-
-Independent project, not affiliated with Anthropic. The canonical repository and Skill name is `cc-anti-ban-skill`; the “Anti-Ban” brand is not a promise to prevent bans or recover accounts. [MIT License](LICENSE) · [Notices](NOTICE.md)
+Independent project, not affiliated with Anthropic. No unban or anti-ban guarantee. The canonical repository/Skill remains `cc-anti-ban-skill`; the command is `cc-health`. [MIT License](LICENSE) · [Notices](NOTICE.md) · [Validation](references/validation.md)
