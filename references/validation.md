@@ -46,4 +46,4 @@ env -i PATH="$PATH" HOME="$cc_check_root/home" TMPDIR="$cc_check_root/tmp" \
 
 [INSTALL.md](../INSTALL.md) 是可执行命令的唯一权威入口。`TestReadme*` 名称保留便于复用原命令；测试现在直接读取 INSTALL 的 `build-only`、`start-ui`、`codex-skill` 代码块。原 42 个场景继续覆盖构建/项目输入与安装目标保护，新增 15 个场景覆盖只构建并显示帮助、构建或帮助失败不链接 Skill，以及父 shell 保持不变。所有 CLI 均为假原生程序，未安装真实 Skill。
 
-README 中的当前界面图来自 `internal/localweb/server_test.go` 的 `TestUIFixture`，使用虚构环境数据，仅通过回环访问；它不是旧静态 demo，也不是实机检查证据。首页渲染只能证明展示与链接检查，不代表各 Agent 客户端或真实 Claude 已验收。
+[隔离 UI 验证截图](../docs/assets/current-ui-fixture.png)保留作为验证资料，来自 `internal/localweb/server_test.go` 的 `TestUIFixture`：使用虚构环境数据，仅通过回环访问，不是旧静态 demo、第三方网站截图或实机检查证据。README 的第三方在线检测参考仅提供原站入口与鸣谢，不代表已接入该站评分或已验收其检测结果。首页渲染只能证明展示与链接检查，不代表各 Agent 客户端或真实 Claude 已验收。

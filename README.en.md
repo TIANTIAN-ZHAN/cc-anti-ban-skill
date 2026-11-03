@@ -4,7 +4,7 @@
 
 Check the environment before drawing conclusions. A local macOS diagnostic tool for Claude Code that can start even when Claude itself is not working.
 
-[中文](README.md) · [Install](INSTALL.md) · [For AI Agents](#for-ai-agents) · [Discuss an error](#discuss-an-error)
+[中文](README.md) · [Install](INSTALL.md) · [For AI Agents](#for-ai-agents) · [Online check reference](#online-check-reference) · [Discuss an error](#discuss-an-error)
 
 ## Start with what you can verify
 
@@ -48,11 +48,13 @@ then wait for me to select a project and authorize inspection.
 
 **[INSTALL.md is the authoritative procedure](INSTALL.md)** (Chinese, with executable shell blocks). Installation ends at a successful build and `--help`. Optional Codex Skill linking is documented separately. Kimi and other agents can read the complete repository directly; client loading and end-to-end compatibility have not been verified. Do not install this diagnostic Skill into `.claude/skills` or rely on Claude to inspect itself.
 
-## Current interface · simulated data
+## Online check reference
 
-![Current Chinese UI with fictional fixture data, not a real machine report](docs/assets/current-ui-fixture.png)
+> **[Net.Coffee · Claude AI IP risk check →](https://ip.net.coffee/claude/)**
+>
+> Thanks to Net.Coffee for the interface inspiration behind our early scoring demo.
 
-Captured from the current isolated UI test fixture. All environment data are fictional; no real configuration or external service was accessed. The Chinese UI still displays “Claude 环境证据”; the project brand is CC Anti-Ban. A missing reference probe remains unknown rather than receiving an invented score.
+This independent third-party site is not integrated into CC Anti-Ban. Its results are not an Anthropic determination of account status.
 
 ## Get started
 

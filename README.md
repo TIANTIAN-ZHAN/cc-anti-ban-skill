@@ -10,7 +10,7 @@
 <p align="center">
   <a href="#for-ai-agents">交给 Agent 安装</a> ·
   <a href="INSTALL.md">手动安装</a> ·
-  <a href="#当前界面">查看界面</a> ·
+  <a href="#在线检测参考">在线检测参考</a> ·
   <a href="#聊聊你的报错">聊聊你的报错</a> ·
   <a href="README.en.md">English</a>
 </p>
@@ -58,13 +58,13 @@ https://github.com/TIANTIAN-ZHAN/cc-anti-ban-skill
 
 安装验收只需成功构建并显示帮助。无需将诊断 Skill 装进 Claude，也无需 Claude 自检。各 Agent 的客户端加载与完整使用流程尚未做端到端兼容验收。
 
-## 当前界面
+## 在线检测参考
 
-**当前界面 · 模拟数据** — 下图直接截取本仓库当前 UI 的隔离测试页面；数据为虚构，未读取真实配置或进行真实外联。未执行的参考探测保持“未知”，不会补出一个漂亮分数。
+> **[Net.Coffee · Claude AI IP 风险检测 →](https://ip.net.coffee/claude/)**
+>
+> 感谢 Net.Coffee 为本项目早期评分演示提供界面参考。
 
-![当前界面，模拟数据：本地检查结果、证据覆盖率与未验证边界](docs/assets/current-ui-fixture.png)
-
-当前工具界面仍显示“Claude 环境证据”；项目品牌为 **CC Anti-Ban**，仓库和 Skill 的名称仍为 `cc-anti-ban-skill`，命令为 `cc-health`。
+该第三方站点与本项目独立；我们未接入其评分服务，检测结果不代表 Anthropic 对账号的判定。
 
 ## 三步开始
 
