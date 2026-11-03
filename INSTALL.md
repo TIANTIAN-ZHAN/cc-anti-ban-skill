@@ -1,4 +1,4 @@
-# 安装 Claude 环境证据
+# 安装 CC Anti-Ban
 
 [产品介绍](README.md) · [English](README.en.md) · [Agent 操作边界](SKILL.md)
 

@@ -3,7 +3,7 @@ name: cc-anti-ban-skill
 description: 审查 macOS + Claude Code 的安装、基础配置、代理和受控参考链路证据，解释覆盖率与参考评分；明确确认后可仅为支持的原生 Claude 新会话设置回环 HTTP 代理。不修改系统配置，不提供防封、恢复账户或模型可用性保证。
 ---
 
-# Claude 环境证据
+# CC Anti-Ban · Claude Code 环境排雷
 
 本项目独立于 Anthropic。工具可在 Claude 不工作时独立启动，但参考检查成功不等于真实 Claude 路由、账号或模型可用。
 

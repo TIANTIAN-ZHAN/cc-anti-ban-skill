@@ -1,10 +1,18 @@
-# Claude Environment Evidence
+# CC Anti-Ban
 
-**Understand your Claude Code environment before changing it.**
+**Claude Code stopped working. Is it really a ban?**
 
-A local macOS tool that brings installation, configuration, proxy selection and a limited reference connection into one view. See what passed, what failed and what remains unknown.
+Check the environment before drawing conclusions. A local macOS diagnostic tool for Claude Code that can start even when Claude itself is not working.
 
-[中文](README.md) · [Install](INSTALL.md) · [For AI Agents](#for-ai-agents) · [Validation](references/validation.md)
+[中文](README.md) · [Install](INSTALL.md) · [For AI Agents](#for-ai-agents) · [Discuss an error](#discuss-an-error)
+
+## Start with what you can verify
+
+Requests time out. Connections fail. Switching proxies still leaves you stuck. Those symptoms alone do not tell you whether an account was suspended.
+
+**CC Anti-Ban** checks installation, basic configuration and startup proxy selection. When you choose, run one limited reference connection probe. See what passed, what failed and what remains unknown before deciding what to try next.
+
+**Received an explicit account suspension notice?** Use the [official appeal process](https://support.claude.com/en/articles/8241253-safeguards-warnings-and-appeals). This tool cannot determine or reverse an account suspension.
 
 ## What you can do
 
@@ -13,6 +21,8 @@ A local macOS tool that brings installation, configuration, proxy selection and 
 - After confirmation, inspect one reference connection across DNS, TCP/CONNECT, TLS and HTTP.
 - Read an explainable score alongside evidence coverage and explicit unknowns.
 - Preview a loopback HTTP proxy plan for a supported new native Claude process, without changing the original shell or system settings.
+
+A `403` can also reflect missing model or resource permissions; a status code alone does not establish an account ban. See [official Claude Code troubleshooting](https://support.claude.com/en/articles/14552646-troubleshoot-claude-code-installation-and-authentication) and [API errors](https://platform.claude.com/docs/en/api/errors).
 
 There is no active outbound probe by default. Local inspection, a network probe and a new Claude session require separate consent. The tool can start independently of Claude Code.
 
@@ -23,7 +33,7 @@ Use **Codex**, **Kimi Code**, or another Coding Agent with local file and termin
 Copy this request into your agent:
 
 ```text
-Install “Claude Environment Evidence” from:
+Install “CC Anti-Ban” from:
 https://github.com/TIANTIAN-ZHAN/cc-anti-ban-skill
 
 Read INSTALL.md and SKILL.md in the complete repository first. Follow INSTALL.md
@@ -42,13 +52,19 @@ then wait for me to select a project and authorize inspection.
 
 ![Current Chinese UI with fictional fixture data, not a real machine report](docs/assets/current-ui-fixture.png)
 
-Captured from the current isolated UI test fixture. All environment data are fictional; no real configuration or external service was accessed. The UI currently uses Chinese. A missing reference probe remains unknown rather than receiving an invented score.
+Captured from the current isolated UI test fixture. All environment data are fictional; no real configuration or external service was accessed. The Chinese UI still displays “Claude 环境证据”; the project brand is CC Anti-Ban. A missing reference probe remains unknown rather than receiving an invented score.
 
 ## Get started
 
 1. Build the tool and verify `--help` using [INSTALL.md](INSTALL.md).
 2. After consent, select a project and open the local interface. Read the disclosure before starting inspection.
 3. Review or export the redacted report. Confirm a reference probe or new-session proxy plan only when needed.
+
+## Discuss an error
+
+Timeout, connection failure, or a specific error? [Share feedback in Issues](https://github.com/TIANTIAN-ZHAN/cc-anti-ban-skill/issues): describe the symptom, reproduction steps, and which environment checks passed, failed or remained unknown.
+
+Share redacted excerpts only. Do not upload raw configuration, full environment variables, account details, email addresses, tokens, or proxy/subscription URLs containing credentials. They are not needed for feedback.
 
 ## Scope and requirements
 
@@ -58,4 +74,4 @@ Local inspection enumerates the full process environment and reads a bounded use
 
 Scores describe limited environment and reference-link evidence. They do not validate accounts, region eligibility, quota, models or Claude's effective route. Normal Claude sessions can make their own network requests, write files and run hooks/MCP. [Report contract](references/report-contract.md) · [Agent workflow](SKILL.md)
 
-Independent project, not affiliated with Anthropic. The canonical repository and Skill name is `cc-anti-ban-skill`; “anti-ban” is not a promise to prevent bans or recover accounts. [MIT License](LICENSE) · [Notices](NOTICE.md)
+Independent project, not affiliated with Anthropic. The canonical repository and Skill name is `cc-anti-ban-skill`; the “Anti-Ban” brand is not a promise to prevent bans or recover accounts. [MIT License](LICENSE) · [Notices](NOTICE.md)

@@ -1,34 +1,40 @@
 <p align="center">
-  <img src="docs/assets/readme-hero.svg" alt="Claude 环境证据 — 定位环境问题，从可解释的证据开始" width="100%">
+  <img src="docs/assets/readme-hero.svg" alt="CC Anti-Ban：Claude 用不了了，你确定是封号？面向 macOS 的 Claude Code 环境排雷" width="100%">
 </p>
 
 <p align="center">
-  <strong>面向 macOS 的 Claude Code 环境诊断工具</strong><br>
-  把安装、配置、代理与参考链路放到同一页，看清哪些已通过、哪些异常、哪些还不知道。
+  <strong>CC Anti-Ban · 先排环境，再下结论。</strong><br>
+  面向 macOS 的 Claude Code 环境排雷工具。Claude 不工作，也能开始排查。
 </p>
 
 <p align="center">
   <a href="#for-ai-agents">交给 Agent 安装</a> ·
   <a href="INSTALL.md">手动安装</a> ·
   <a href="#当前界面">查看界面</a> ·
+  <a href="#聊聊你的报错">聊聊你的报错</a> ·
   <a href="README.en.md">English</a>
 </p>
 
 <p align="center">macOS · 本地优先 · 按次确认 · MIT</p>
 
-## 把“连不上”拆成看得见的问题
+## 用不了，就一定是封号？
 
-Claude Code 出现问题时，安装、代理和配置往往混在一起。**Claude 环境证据**先整理当前启动环境，再由你决定是否进行一次网络参考探测，或为一个新 Claude 会话应用临时代理。
+Claude Code 突然用不了：请求超时、连接失败，代理切来切去还是不行。你可能已经开始怀疑账号，但这些现象本身还不能告诉你原因。
 
-| 你想弄清楚的事 | 工具能给你的证据 |
+**CC Anti-Ban** 从能验证的地方开始：查安装、基础配置和启动代理；需要时，再确认一次限定的网络参考探测。把通过、异常和未知摊开看，决定下一步怎么做。
+
+**已经明确收到账号停用通知？** 请走 [官方申诉](https://support.claude.com/en/articles/8241253-safeguards-warnings-and-appeals)。本工具不判断账号是否停用，也不能恢复被停用的账号。
+
+| 先查哪里 | 你能得到什么 |
 | --- | --- |
-| Claude 装在哪里，版本能否读取？ | PATH 定位与受限沙箱中的版本检查 |
-| 配置和代理是否存在冲突？ | 基础 JSON/env 校验、启动代理选择与已观察冲突 |
-| 一次参考连接卡在哪一层？ | 用户确认后的 DNS、TCP/CONNECT、TLS、HTTP 分层结果 |
-| 这些结果能说明多少？ | 可解释评分、证据覆盖率，以及明确保留的未知项 |
-| 想试一个本机代理，又不改原环境？ | 为受支持的新 Claude 进程应用回环 HTTP 代理，单独预览并确认 |
+| 安装与配置 | 找到 Claude CLI、检查版本与基础 JSON/env 结构，定位已观察到的冲突 |
+| 代理与参考链路 | 看清启动代理选择；确认后查看一次 DNS、TCP/CONNECT、TLS、HTTP 分层结果 |
+| 结果可信到哪一步 | 参考评分与证据覆盖率一起展示；证据不足就保留未知 |
+| 想试一个本机代理 | 预览计划，为受支持的新 Claude 进程应用回环 HTTP 代理，原环境不变 |
 
-**默认无主动外联。** 本地检查、一次网络探测和新会话启动分别确认；不修改系统代理、原 shell 或配置文件。工具可独立启动，不需要 Claude 先能正常工作。
+报错要结合上下文看：例如 `403` 也可能涉及模型或资源访问权限，不能只凭状态码判定封号。参见 [Claude Code 官方排障](https://support.claude.com/en/articles/14552646-troubleshoot-claude-code-installation-and-authentication) 与 [API 错误说明](https://platform.claude.com/docs/en/api/errors)。
+
+**默认无主动外联。** 本地检查、一次网络探测和新会话启动分别确认；不修改系统代理、原 shell 或配置文件。你可以先停在本地检查这一步。
 
 ## For AI Agents
 
@@ -37,7 +43,7 @@ Claude Code 出现问题时，安装、代理和配置往往混在一起。**Cla
 适用于 **Codex、Kimi Code**，或使用 **DeepSeek 等模型**且具备本地文件与终端工具的其他 Coding Agent。Claude Code 是被检查对象，安装和诊断交给独立 Agent。
 
 ```text
-帮我安装「Claude 环境证据」：
+帮我安装「CC Anti-Ban」：
 https://github.com/TIANTIAN-ZHAN/cc-anti-ban-skill
 
 先阅读完整仓库中的 INSTALL.md 和 SKILL.md，按 INSTALL.md 检查依赖、
@@ -58,7 +64,7 @@ https://github.com/TIANTIAN-ZHAN/cc-anti-ban-skill
 
 ![当前界面，模拟数据：本地检查结果、证据覆盖率与未验证边界](docs/assets/current-ui-fixture.png)
 
-当前 UI 使用“Claude 环境证据”作为展示名；仓库和 Skill 的名称仍为 `cc-anti-ban-skill`，命令为 `cc-health`。
+当前工具界面仍显示“Claude 环境证据”；项目品牌为 **CC Anti-Ban**，仓库和 Skill 的名称仍为 `cc-anti-ban-skill`，命令为 `cc-health`。
 
 ## 三步开始
 
@@ -74,10 +80,16 @@ https://github.com/TIANTIAN-ZHAN/cc-anti-ban-skill
 - **分数含义：** 评分仅描述限定的环境与参考链路。账号、地区资格、额度、模型及 Claude 最终实际路由始终保留未知；覆盖不足时不显示数字。[评分与报告契约](references/report-contract.md)
 - **运行范围：** 需要 Go 1.25+、clang/SDK 与可信已运行 zsh。实际验证为 macOS 27 arm64；最低构建目标 13.0 不等于旧系统或 Intel 已通过。当前无预编译包，官方 Claude 完整兼容性未实证。[安装与支持](INSTALL.md)
 
+## 聊聊你的报错
+
+你遇到的是超时、连接失败，还是某个具体错误？[到 Issues 交流或反馈](https://github.com/TIANTIAN-ZHAN/cc-anti-ban-skill/issues)，分享错误现象、复现步骤，以及哪些环境证据通过、失败或仍未知。
+
+只贴经过脱敏的片段；不要上传原始配置、完整环境变量、账号、邮箱、token 或含凭据的代理/订阅链接。反馈不需要这些信息。
+
 ## 文档与项目
 
 [安装指南](INSTALL.md) · [Agent 操作说明](SKILL.md) · [隔离验证](references/validation.md) · [English](README.en.md)
 
 另有 [早期静态交互原型](demo/index.html) 可离线打开；其中 83→95、地区/IP/WebRTC 等是原型示例，不是当前工具的实测结果或功能承诺。
 
-本项目独立开发，非 Anthropic 官方产品。仓库名中的 “anti-ban” 不代表防封、恢复账户或可用性保证。采用 [MIT License](LICENSE)，名称和素材说明见 [NOTICE](NOTICE.md)。
+本项目独立开发，非 Anthropic 官方产品。品牌与仓库名中的 “Anti-Ban” 不代表防封、恢复账户或可用性保证。采用 [MIT License](LICENSE)，名称和素材说明见 [NOTICE](NOTICE.md)。

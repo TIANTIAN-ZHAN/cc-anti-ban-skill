@@ -1,28 +1,28 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="420" viewBox="0 0 1280 420" role="img" aria-labelledby="title desc">
-  <title id="title">Claude 环境证据</title>
-  <desc id="desc">定位环境问题，从可解释的证据开始。macOS 本地环境诊断。</desc>
-  <rect width="1280" height="420" rx="14" fill="#101b27"/>
-  <path d="M0 365H1280M960 0V420" stroke="#273744"/>
-  <g fill="none" stroke="#334b57" stroke-width="1.5">
-    <circle cx="1050" cy="205" r="128"/>
-    <circle cx="1050" cy="205" r="90"/>
-    <path d="M890 205H1210M1050 45V365"/>
-    <path d="M958 113L1142 297M958 297L1142 113" stroke-dasharray="4 8"/>
-  </g>
-  <path d="M946 204L1015 251L1141 140" fill="none" stroke="#8de1bd" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="946" cy="204" r="8" fill="#8de1bd"/>
-  <circle cx="1015" cy="251" r="8" fill="#8de1bd"/>
-  <circle cx="1141" cy="140" r="8" fill="#f0b695"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="500" viewBox="0 0 1280 500" role="img" aria-labelledby="title desc">
+  <title id="title">CC Anti-Ban — Claude 用不了了，你确定是封号？</title>
+  <desc id="desc">面向 macOS 的 Claude Code 环境排雷。先查环境，别只凭报错猜。TIMEOUT、连接失败、代理冲突仅为症状示意。</desc>
+  <rect width="1280" height="500" fill="#f3efe6"/>
+  <path d="M880 96V380" stroke="#c9c2b6" stroke-width="2"/>
+  <rect x="56" y="43" width="9" height="30" fill="#d74727"/>
   <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif">
-    <text x="64" y="71" fill="#8de1bd" font-size="15" font-weight="600" letter-spacing="3">CLARITY BEFORE ACTION</text>
-    <text x="60" y="166" fill="#f4f3ec" font-size="66" font-weight="650">Claude 环境证据</text>
-    <text x="64" y="230" fill="#d2dcd9" font-size="29">定位环境问题，从可解释的证据开始。</text>
-    <text x="64" y="302" fill="#8fa7b1" font-size="19">安装与配置</text>
-    <text x="219" y="302" fill="#56727c" font-size="19">/</text>
-    <text x="250" y="302" fill="#8fa7b1" font-size="19">代理与参考链路</text>
-    <text x="441" y="302" fill="#56727c" font-size="19">/</text>
-    <text x="473" y="302" fill="#8fa7b1" font-size="19">已知与未知</text>
-    <text x="64" y="399" fill="#b4c2c5" font-size="14" letter-spacing="2">macOS · LOCAL EVIDENCE · OPEN SOURCE</text>
-    <text x="1214" y="399" fill="#8de1bd" font-size="14" text-anchor="end">cc-health</text>
+    <text x="82" y="68" fill="#1a1a18" font-size="30" font-weight="800" letter-spacing="1">CC Anti-Ban</text>
+    <text x="1224" y="65" fill="#59574f" font-size="20" font-weight="600" text-anchor="end">Claude Code 环境排雷 / macOS</text>
+    <text x="51" y="176" fill="#1a1a18" font-size="76" font-weight="800" letter-spacing="-2">Claude 用不了了，</text>
+    <text x="51" y="276" fill="#1a1a18" font-size="84" font-weight="800" letter-spacing="-2">你确定是<tspan fill="#d74727">封号？</tspan></text>
+    <path d="M380 296H635" stroke="#d74727" stroke-width="7"/>
+    <text x="57" y="353" fill="#45443e" font-size="28" font-weight="500">先查环境，别只凭报错猜。</text>
+    <text x="927" y="127" fill="#777166" font-size="17">症状示意 · 非真实报告</text>
+    <text x="922" y="183" fill="#1a1a18" font-size="36" font-weight="750" letter-spacing="1">TIMEOUT</text>
+    <text x="922" y="238" fill="#1a1a18" font-size="34" font-weight="700">连接失败</text>
+    <text x="922" y="293" fill="#1a1a18" font-size="34" font-weight="700">代理冲突</text>
+    <text x="1160" y="359" fill="#d74727" font-size="172" font-weight="800" text-anchor="middle">?</text>
+    <path d="M925 345H969L983 330M1005 358L1018 345H1054" fill="none" stroke="#d74727" stroke-width="6" stroke-linecap="square"/>
+    <path d="M980 357L1007 329" stroke="#d74727" stroke-width="3"/>
+  </g>
+  <rect y="420" width="1280" height="80" fill="#1a1a18"/>
+  <rect x="56" y="452" width="26" height="5" fill="#f28358"/>
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" fill="#f3efe6">
+    <text x="99" y="464" font-size="18" font-weight="600" letter-spacing="1.5">FOR CLAUDE CODE ON macOS</text>
+    <text x="1224" y="464" font-size="17" text-anchor="end" letter-spacing="1">INSTALL · CONFIG · PROXY</text>
   </g>
 </svg>
