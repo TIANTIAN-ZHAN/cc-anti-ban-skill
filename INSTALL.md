@@ -24,12 +24,14 @@
 | --- | --- |
 | 系统 | macOS；实际验证为 macOS 27 arm64，构建最低目标为 13.0 |
 | 源码 | Git 与完整仓库；不能只下载 `SKILL.md` |
-| 工具链 | Go 1.25+，Xcode 或 Command Line Tools 的 clang/SDK，以及系统 codesign |
+| 工具链 | Go 稳定版 1.26.10+（1.26 分支）、1.27.3+（1.27 分支）或更新稳定分支；Xcode 或 Command Line Tools 的 clang/SDK，以及系统 codesign |
 | Shell | 已运行、解析与模块可信的 zsh |
 
 无需 Node、Python、Claude 登录或 API key 来构建和打开工具界面。当前没有预编译发行包；Windows、Linux、Intel 和 macOS 13–26 未经本项目实机验证。
 
 从可信环境确认依赖已安装。若发现 DYLD 污染或 shell 注入嫌疑，不要新起解释器来“清理”，先停止；[安全构建边界](references/phase5-entry-session-validation.md)解释了本入口能处理和不能处理的情况。构建脚本会禁用 Go 模块/工具链下载，本地工具链不满足要求时直接失败。
+
+上述版本是 **2026-11-03 核定的最低修复版本**，来自 [Go 官方安全发行记录](https://go.dev/doc/devel/release)；推荐使用当前受支持分支的最新稳定补丁。`go.mod` 的 `go 1.25.0` 仅保留语言/API 最低要求，不是安装构建的安全门槛。入口拒绝旧补丁、beta/rc/devel 和不明版本，在版本查询与构建时均关闭自动工具链切换、忽略持久 GOENV/GOFLAGS 和外部 Go workspace；不会替你升级全局 Go。门槛不会自动跟踪未来漏洞或支持期限，版本较新也不是永无漏洞的保证。
 
 在你选择的父目录获取源码。目标目录已存在时，先核实是否为要复用的仓库，不覆盖它：
 

@@ -41,12 +41,27 @@ if [[ -n ${ZSH_VERSION-} && ${ZSH_EVAL_CONTEXT-} == *:file
     \builtin \print -u2 '此受支持构建入口仅适用于 macOS。'
     \builtin \return 2
   fi
+  # Security patch floors reviewed 2026-11-03, distinct from go.mod's language
+  # minimum. Query the installed toolchain without GOENV/GOFLAGS/workspace or
+  # automatic toolchain selection; use the same policy for the build below.
+  cc_go_version=$(GOENV=off GOFLAGS= GOWORK=off GOTOOLCHAIN=local GOPROXY=off GOSUMDB=off \command \go env GOVERSION) || \builtin \return 2
+  if [[ $cc_go_version =~ '^go1\.([1-9][0-9]{0,2})\.(0|[1-9][0-9]{0,4})$' ]]; then
+    cc_go_minor=$match[1]
+    cc_go_patch=$match[2]
+  else
+    \builtin \print -u2 '无法确认标准稳定版 Go；预发布、开发版和未知版本不能用于此构建入口。'
+    \builtin \return 2
+  fi
+  if ! [[ $cc_go_minor -ge 28 || ( $cc_go_minor -eq 27 && $cc_go_patch -ge 3 ) || ( $cc_go_minor -eq 26 && $cc_go_patch -ge 10 ) ]]; then
+    \builtin \print -u2 'Go 未达到本次已核最低修复版本：需要 1.26.10、1.27.3 或更新稳定分支；请自行升级本地工具链后重试。'
+    \builtin \return 2
+  fi
   /bin/mkdir -p "${cc_output:h}" || \builtin \return 2
   cc_stage=$(/usr/bin/mktemp -d "${cc_output:h}/.cc-health-build.XXXXXX") || \builtin \return 2
   \builtin \trap '/bin/rm -f -- "$cc_binary"; /bin/rmdir -- "$cc_stage"' EXIT
   cc_binary=$cc_stage/cc-health
   # No install, credential lookup, network dependency download or Developer ID.
-  MACOSX_DEPLOYMENT_TARGET=13.0 CGO_CFLAGS="-O2 -g -mmacosx-version-min=13.0" CGO_LDFLAGS="-mmacosx-version-min=13.0" CGO_ENABLED=1 GOPROXY=off GOSUMDB=off GOTOOLCHAIN=local \command \go build -C "$cc_source_root" -o "$cc_binary" ./cmd/cc-health || \builtin \return 2
+  MACOSX_DEPLOYMENT_TARGET=13.0 CGO_CFLAGS="-O2 -g -mmacosx-version-min=13.0" CGO_LDFLAGS="-mmacosx-version-min=13.0" CGO_ENABLED=1 GOENV=off GOFLAGS= GOWORK=off GOPROXY=off GOSUMDB=off GOTOOLCHAIN=local \command \go build -C "$cc_source_root" -o "$cc_binary" ./cmd/cc-health || \builtin \return 2
   /usr/bin/codesign --force --sign - --options runtime "$cc_binary" || \builtin \return 2
   /usr/bin/codesign --verify --strict "$cc_binary" || \builtin \return 2
   cc_signature=$(/usr/bin/codesign -d --verbose=4 "$cc_binary" 2>&1) || \builtin \return 2

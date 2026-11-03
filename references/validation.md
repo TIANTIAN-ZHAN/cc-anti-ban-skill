@@ -1,6 +1,6 @@
 # 隔离验证与边界
 
-已验证的是实现行为，不是用户账号或真实 Claude 服务可用性。历史验收使用 macOS 27 arm64、Go 1.25.6、本地 clang/SDK；其他系统/架构及官方 CLI 完整兼容未实证。构建的 minos13 只是最低部署目标。
+已验证的是实现行为，不是用户账号或真实 Claude 服务可用性。历史验收使用 macOS 27 arm64、Go 1.25.6、本地 clang/SDK；Go 1.25.6 已低于当前安装构建安全门槛，不应继续用于用户安装。当前门槛及更新责任见 [INSTALL](../INSTALL.md#1-准备环境)，隔离开发验证也应使用已核修复的稳定编译器。其他系统/架构及官方 CLI 完整兼容未实证。构建的 minos13 只是最低部署目标。
 
 ## 可复现测试
 
@@ -11,7 +11,7 @@ cc_check_root="$(mktemp -d "${TMPDIR:-/tmp}/cc-health-check.XXXXXX")" &&
 mkdir -p "$cc_check_root/home" "$cc_check_root/tmp" "$cc_check_root/cache" "$cc_check_root/gopath" &&
 env -i PATH="$PATH" HOME="$cc_check_root/home" TMPDIR="$cc_check_root/tmp" \
   GOCACHE="$cc_check_root/cache" GOPATH="$cc_check_root/gopath" \
-  GOPROXY=off GOSUMDB=off GOTOOLCHAIN=local CGO_ENABLED=1 \
+  GOENV=off GOFLAGS= GOWORK=off GOPROXY=off GOSUMDB=off GOTOOLCHAIN=local CGO_ENABLED=1 \
   MACOSX_DEPLOYMENT_TARGET=13.0 CGO_CFLAGS="-O2 -g -mmacosx-version-min=13.0" \
   CGO_LDFLAGS="-mmacosx-version-min=13.0" \
   go test -race -count=1 ./...
@@ -29,8 +29,11 @@ env -i PATH="$PATH" HOME="$cc_check_root/home" TMPDIR="$cc_check_root/tmp" \
 | 单次清单、回环 TLS/CONNECT/HEAD、取消后不进入下一阶段 | [probe 测试](../internal/health/probe_test.go)、[活动取消](../internal/localweb/activity_test.go) |
 | 批准对象固定、唯一 reaper/根 PID 信号、路径置换及真实假 PTY | [runner 测试](../internal/runner/process_darwin_test.go)、[监督](../internal/runner/supervisor_test.go) |
 | Mach-O raw 命令/范围拒绝、清理 FD/最小删除/还原受阻 | [Mach-O](../internal/runner/macho_test.go)、[清理对象](../internal/runner/artifact_test.go) |
+| mkdir/FD 耗尽的半创建恢复、目录身份重开与未创建入口保护、manager retained 解除 | [独立子进程资源失败](../internal/runner/artifact_creation_darwin_test.go)、[manager 恢复](../internal/execution/creation_cleanup_darwin_test.go) |
 | manager/API/UI 的 retained 重试、权限与到期 session | [清理 HTTP](../internal/localweb/cleanup_darwin_test.go)、[会话到期](../internal/localweb/session_expiry_test.go) |
 | 直接抽取 INSTALL 命令：构建/帮助门禁、项目 cwd、父 shell 状态、Skill 已有目标/悬空链接/重复安装拒绝 | [安装命令测试](../cmd/cc-health/readme_darwin_test.go) |
+
+资源耗尽回归只在独立测试子进程临时降低自身 FD 上限，随后恢复；不修改测试驱动或用户其他进程。安装测试还覆盖旧补丁、预发布/未知版本拒绝、最低修复版/未来稳定分支放行，以及版本查询和构建都隔离 GOENV/GOFLAGS/外部 workspace。拒绝时不得开始编译、启动旧产物或安装 Skill。
 
 ## 如何解释结果
 

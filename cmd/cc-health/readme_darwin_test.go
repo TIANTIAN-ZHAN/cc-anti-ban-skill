@@ -39,16 +39,7 @@ func TestReadmeConditionalBuildStartsChosenProject(t *testing.T) {
 					readmeWrite(t, filepath.Join(fakeRepo, "scripts", "build-safe.zsh"), script, 0600)
 					old := filepath.Join(fakeRepo, ".build", "cc-health")
 					readmeWrite(t, old, oldBinary, 0700)
-					fakeGo := `#!/bin/sh
-if [ "$CC_BUILD_MODE" = fail ]; then exit 9; fi
-output=
-while [ "$#" -gt 0 ]; do
-  if [ "$1" = -o ]; then output=$2; shift; fi
-  shift
-done
-[ -n "$output" ] || exit 10
-/bin/cp "$CC_NEW_BINARY" "$output"
-`
+					fakeGo := readmeFakeGo()
 					readmeWrite(t, filepath.Join(root, "bin", "go"), []byte(fakeGo), 0700)
 					input := project + "\n"
 					switch mode {
@@ -301,7 +292,21 @@ func readmeBuildSetup(t *testing.T, root, repo string, oldBinary []byte) {
 	}
 	readmeWrite(t, filepath.Join(repo, "scripts", "build-safe.zsh"), script, 0600)
 	readmeWrite(t, filepath.Join(repo, ".build", "cc-health"), oldBinary, 0700)
-	readmeWrite(t, filepath.Join(root, "bin", "go"), []byte(`#!/bin/sh
+	readmeWrite(t, filepath.Join(root, "bin", "go"), []byte(readmeFakeGo()), 0700)
+}
+
+func readmeFakeGo() string {
+	return `#!/bin/sh
+[ "$GOENV" = off ] && [ "${GOFLAGS+x}" = x ] && [ "$GOFLAGS" = '' ] &&
+  [ "$GOWORK" = off ] && [ "$GOTOOLCHAIN" = local ] &&
+  [ "$GOPROXY" = off ] && [ "$GOSUMDB" = off ] || exit 89
+if [ "$1" = env ] && [ "$2" = GOVERSION ] && [ "$#" = 2 ]; then
+  [ "$CC_VERSION_FAIL" != 1 ] || exit 88
+  printf '%s\n' "${CC_FAKE_GO_VERSION-go1.27.3}"
+  exit 0
+fi
+[ "$1" = build ] || exit 87
+if [ -n "$CC_GO_BUILD_RECEIPT" ]; then printf 'build\n' > "$CC_GO_BUILD_RECEIPT"; fi
 if [ "$CC_BUILD_MODE" = fail ]; then exit 9; fi
 output=
 while [ "$#" -gt 0 ]; do
@@ -310,7 +315,58 @@ while [ "$#" -gt 0 ]; do
 done
 [ -n "$output" ] || exit 10
 /bin/cp "$CC_NEW_BINARY" "$output"
-`), 0700)
+`
+}
+
+func TestReadmeGoSecurityVersionGate(t *testing.T) {
+	block := readmeZshBlock(t, "<!-- command: build-only -->")
+	oldBinary, fresh := readmeNativeFixtures(t)
+	for _, tt := range []struct {
+		version string
+		allowed bool
+	}{
+		{"go1.25.6", false}, {"go1.26.9", false}, {"go1.26.10", true},
+		{"go1.27.2", false}, {"go1.27.3", true}, {"go1.27.10", true}, {"go1.28.0", true},
+		{"go1.27rc3", false}, {"go1.28beta1", false}, {"devel go1.28", false},
+		{"go1.27", false}, {"go1.27.3-custom", false}, {"go1.027.3", false},
+		{"go1.27.03", false}, {"go1.27.3 extra", false}, {"go1.27.3\nextra", false},
+		{"go2.0.0", false}, {"go1.999999999999.3", false}, {"", false}, {"query-error", false},
+	} {
+		t.Run(tt.version, func(t *testing.T) {
+			root := t.TempDir()
+			env := readmeFixtureEnv(t, root)
+			repo := filepath.Join(root, "repository with spaces")
+			readmeBuildSetup(t, root, repo, oldBinary)
+			receipt, buildReceipt := filepath.Join(root, "launch-receipt"), filepath.Join(root, "build-receipt")
+			cmd := exec.Command("/bin/zsh", "-f", "-c", readmeParentShell(block, "preset"))
+			cmd.Dir = repo
+			cmd.Env = append(env, "CC_FAKE_GO_VERSION="+tt.version, "CC_NEW_BINARY="+fresh, "CC_LAUNCH_RECEIPT="+receipt,
+				"CC_GO_BUILD_RECEIPT="+buildReceipt, "GOENV=/untrusted/fixture", "GOFLAGS=-toolexec=/untrusted/fixture", "GOWORK=/untrusted/fixture", "GOTOOLCHAIN=go1.99.0+auto")
+			if tt.version == "query-error" {
+				cmd.Env = append(cmd.Env, "CC_VERSION_FAIL=1")
+			}
+			out, runErr := cmd.CombinedOutput()
+			readmeParentPreserved(t, out)
+			if tt.allowed {
+				if runErr != nil {
+					t.Fatalf("safe stable compiler rejected: %v %s", runErr, out)
+				}
+				readmeAssertLaunch(t, receipt, repo, "--help")
+			} else {
+				if runErr == nil {
+					t.Fatal("unsafe or unknown compiler accepted")
+				}
+				readmeAssertNotLaunched(t, receipt)
+				if _, err := os.Stat(buildReceipt); !os.IsNotExist(err) {
+					t.Fatal("rejected compiler reached build")
+				}
+				after, err := os.ReadFile(filepath.Join(repo, ".build", "cc-health"))
+				if err != nil || sha256.Sum256(after) != sha256.Sum256(oldBinary) {
+					t.Fatal("rejected compiler changed old binary")
+				}
+			}
+		})
+	}
 }
 
 func readmeAssertLaunch(t *testing.T, receipt, cwd, argument string) {

@@ -15,6 +15,13 @@ func spawnApproved(*Prepared, [3]*os.File, []string) (int, error) {
 }
 
 func artifactMkdir(*os.File, string) error { return errors.New("native_adapter_unavailable") }
+func artifactDirectoryIdentity(*os.File, string) (*artifactIdentity, error) {
+	return nil, errors.New("native_adapter_unavailable")
+}
+func (*artifactIdentity) matches(*os.File) bool { return false }
+func artifactDuplicate(*os.File) (*os.File, error) {
+	return nil, errors.New("native_adapter_unavailable")
+}
 func artifactOpen(*os.File, string, bool, bool) (*os.File, error) {
 	return nil, errors.New("native_adapter_unavailable")
 }

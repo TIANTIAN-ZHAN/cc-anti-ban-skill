@@ -16,12 +16,19 @@ import (
 // arbitrary same-UID adversary entering the private slots themselves.
 type artifact struct {
 	parent, directory, entry        *os.File
+	directoryIdentity               *artifactIdentity
 	base, leaf                      string
 	captured, entryRemoved, removed bool
 	undo                            *captureUndo
 	beforeCapture                   func(string) // Package-private deterministic race injection.
 	afterCapture                    func(string)
 }
+type artifactIdentity struct {
+	device, inode       uint64
+	generation          uint32
+	birthSec, birthNsec int64
+}
+
 type captureUndo struct {
 	directory *os.File
 	from, to  string
@@ -52,29 +59,52 @@ func newPreparedFile() (*Prepared, *os.File, error) {
 		parent.Close()
 		return nil, nil, e
 	}
-	a := &artifact{parent: parent, base: base, leaf: "entry"}
+	// No leaf is owned until O_EXCL creation succeeds. An empty directory from a
+	// failed creation can be removed, but an unexpected entry must be retained.
+	a := &artifact{parent: parent, base: base, leaf: "entry", entryRemoved: true}
 	p := &Prepared{temporary: filepath.Join(parentPath, base), artifact: a}
 	p.path = filepath.Join(p.temporary, "entry")
-	a.directory, e = artifactOpen(parent, base, true, false)
+	// fstatat does not allocate an FD: retain identity even if open hits EMFILE.
+	// Creation in a random 0700 slot is not a same-UID isolation boundary.
+	a.directoryIdentity, e = artifactDirectoryIdentity(parent, base)
 	if e != nil {
 		return p, nil, e
-	} // Keep the parent and name; never chase a replacement.
+	}
+	if e = a.openDirectory(); e != nil {
+		return p, nil, e
+	}
 	target, e := artifactOpen(a.directory, "entry", false, true)
 	if e != nil {
 		return p, nil, e
 	}
-	a.entry, e = artifactOpen(a.directory, "entry", false, false)
+	// Keep the original creation FD for identity. The writer receives a duplicate
+	// of that object, never a second pathname lookup. Dup failure cannot discard it.
+	a.entry = target
+	a.entryRemoved = false
+	writer, e := artifactDuplicate(target)
 	if e != nil {
-		target.Close()
 		return p, nil, e
 	}
-	left, le := target.Stat()
-	right, re := a.entry.Stat()
-	if le != nil || re != nil || !os.SameFile(left, right) {
-		target.Close()
-		return p, nil, errors.New("cleanup_identity_changed")
+	return p, writer, nil
+}
+
+func (a *artifact) openDirectory() error {
+	if a.directory != nil {
+		return nil
 	}
-	return p, target, nil
+	if a.parent == nil || a.directoryIdentity == nil {
+		return errors.New("cleanup_identity_unconfirmed")
+	}
+	directory, err := artifactOpen(a.parent, a.base, true, false)
+	if err != nil {
+		return err
+	}
+	if !a.directoryIdentity.matches(directory) {
+		directory.Close()
+		return errors.New("cleanup_identity_changed")
+	}
+	a.directory = directory
+	return nil
 }
 func sameAt(parent *os.File, name string, expected *os.File, directory bool) bool {
 	if parent == nil || expected == nil {
@@ -129,7 +159,10 @@ func (a *artifact) cleanup() error {
 		a.undo = nil
 		return errors.New("cleanup_identity_changed") // Require a fresh retry after restoration.
 	}
-	if a.parent == nil || a.directory == nil {
+	if a.parent == nil {
+		return errors.New("cleanup_identity_unconfirmed")
+	}
+	if err := a.openDirectory(); err != nil {
 		return errors.New("cleanup_identity_unconfirmed")
 	}
 	if !a.captured {

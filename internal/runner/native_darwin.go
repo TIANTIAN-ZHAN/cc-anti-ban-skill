@@ -12,8 +12,20 @@ package runner
 #include <unistd.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <stdint.h>
 
 static int artifact_mkdir(int parent, const char *name) { return mkdirat(parent,name,0700)==0 ? 0 : errno; }
+static int artifact_directory_identity(int parent, const char *name, uint64_t *device, uint64_t *inode,
+                                      uint32_t *generation, int64_t *birth_sec, int64_t *birth_nsec) {
+ struct stat status;
+ if (fstatat(parent,name,&status,AT_SYMLINK_NOFOLLOW)!=0) return errno;
+ if (!S_ISDIR(status.st_mode)) return ENOTDIR;
+ *device=(uint64_t)status.st_dev; *inode=(uint64_t)status.st_ino;
+ *generation=status.st_gen;
+ *birth_sec=status.st_birthtimespec.tv_sec; *birth_nsec=status.st_birthtimespec.tv_nsec;
+ return 0;
+}
+static int artifact_duplicate(int fd) { return fcntl(fd,F_DUPFD_CLOEXEC,0); }
 static int artifact_open(int parent,const char *name,int directory,int create) {
  int flags=O_CLOEXEC|O_NOFOLLOW|O_NONBLOCK;
  flags|=directory ? O_RDONLY|O_DIRECTORY : (create ? O_RDWR|O_CREAT|O_EXCL : O_RDONLY);
@@ -126,6 +138,41 @@ func artifactMkdir(parent *os.File, name string) error {
 		return syscall.Errno(rc)
 	}
 	return nil
+}
+func artifactDirectoryIdentity(parent *os.File, name string) (*artifactIdentity, error) {
+	text := C.CString(name)
+	defer C.free(unsafe.Pointer(text))
+	var device, inode C.uint64_t
+	var generation C.uint32_t
+	var birthSec, birthNsec C.int64_t
+	rc := C.artifact_directory_identity(C.int(parent.Fd()), text, &device, &inode, &generation, &birthSec, &birthNsec)
+	runtime.KeepAlive(parent)
+	if rc != 0 {
+		return nil, syscall.Errno(rc)
+	}
+	return &artifactIdentity{device: uint64(device), inode: uint64(inode), generation: uint32(generation), birthSec: int64(birthSec), birthNsec: int64(birthNsec)}, nil
+}
+func (id *artifactIdentity) matches(file *os.File) bool {
+	if id == nil || file == nil {
+		return false
+	}
+	info, err := file.Stat()
+	if err != nil || !info.IsDir() {
+		return false
+	}
+	stat, ok := info.Sys().(*syscall.Stat_t)
+	// A failed initial open has not pinned the inode. Also bind creation metadata
+	// so a recycled inode does not acquire the original directory's authority.
+	return ok && uint64(stat.Dev) == id.device && uint64(stat.Ino) == id.inode &&
+		stat.Gen == id.generation && stat.Birthtimespec.Sec == id.birthSec && stat.Birthtimespec.Nsec == id.birthNsec
+}
+func artifactDuplicate(file *os.File) (*os.File, error) {
+	fd, err := C.artifact_duplicate(C.int(file.Fd()))
+	runtime.KeepAlive(file)
+	if fd < 0 {
+		return nil, err
+	}
+	return os.NewFile(uintptr(fd), "owned-artifact-writer"), nil
 }
 func artifactOpen(parent *os.File, name string, directory, create bool) (*os.File, error) {
 	text := C.CString(name)

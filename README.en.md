@@ -80,7 +80,7 @@ Third-party pages may automatically collect IP/DNS/WebRTC/device information. Vi
 
 The existing score describes limited reference evidence and coverage. The CLI account field remains unknown with no passing weight. Guided notes do not modify the Report. [Report contract](references/report-contract.md) · [Install](INSTALL.md)
 
-Requires Go 1.25+, clang/SDK and a trusted, already-running zsh. Tested on macOS 27 arm64; older macOS, Intel and full official CLI compatibility are unverified. No prebuilt packages are provided. Local inspection may read credentials in environment/configuration data into memory; raw contents are not sent externally, logged or exported, and immediate erasure is not promised. [Privacy and consent](references/safety-and-privacy.md)
+Requires a stable Go toolchain meeting the [installation security requirements](INSTALL.md), clang/SDK and a trusted, already-running zsh. Tested on macOS 27 arm64; older macOS, Intel and full official CLI compatibility are unverified. No prebuilt packages are provided. Local inspection may read credentials in environment/configuration data into memory; raw contents are not sent externally, logged or exported, and immediate erasure is not promised. [Privacy and consent](references/safety-and-privacy.md)
 
 ## Feedback
 
