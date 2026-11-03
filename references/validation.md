@@ -46,10 +46,10 @@ env -i PATH="$PATH" HOME="$cc_check_root/home" TMPDIR="$cc_check_root/tmp" \
 
 [INSTALL.md](../INSTALL.md) 是可执行命令的唯一权威入口。`TestReadme*` 名称保留便于复用原命令；测试现在直接读取 INSTALL 的 `build-only`、`start-ui`、`codex-skill` 代码块。原 42 个场景继续覆盖构建/项目输入与安装目标保护，新增 15 个场景覆盖只构建并显示帮助、构建或帮助失败不链接 Skill，以及父 shell 保持不变。所有 CLI 均为假原生程序，未安装真实 Skill。
 
-[隔离 UI 验证截图](../docs/assets/current-ui-fixture.png)保留作为验证资料，来自 `internal/localweb/server_test.go` 的 `TestUIFixture`：使用虚构环境数据，仅通过回环访问，不是旧静态 demo、第三方网站截图或实机检查证据。README 的第三方在线检测参考仅提供原站入口与鸣谢，不代表已接入该站评分或已验收其检测结果。首页渲染只能证明展示与链接检查，不代表各 Agent 客户端或真实 Claude 已验收。
+[隔离 UI 验证截图](../docs/assets/current-ui-fixture.png)保留作为验证资料，来自 `internal/localweb/server_test.go` 的 `TestUIFixture`：使用虚构环境数据，仅通过回环访问，不是旧静态 demo、第三方网站截图或实机检查证据。README 的第三方参考包含用户提供的脱敏截图与原站入口，不代表已接入该站评分或已验收其检测结果。首页渲染只能证明展示与链接检查，不代表各 Agent 客户端或真实 Claude 已验收。
 
 ## Skill 文字流程与页面参考
 
 新增的[自查指南](self-check.md)和[来源说明](self-check-sources.md)只组织 Agent 文字报告，不更改 CLI Report、账号 unknown 或数字评分。Skill frontmatter 可由 skill-creator 的 quick_validate 检查；这不证明决策质量。前向检查应使用虚构请求和脱敏材料、独立评审者及隔离输出，核实际路由与下一步选择；没有执行结果就不记为通过。
 
-安装/测试/核心未变时复用原 57 场景证据，不为纯文案与品牌调整重复运行产品测试。README 的远程图片只引用 Net.Coffee 原站静态分享封面；它们不是检测报告，本地文档渲染也不构成真实网络/账号验证。禁止为展示示例自动进入第三方检测页面或执行其检测脚本。
+安装/测试/核心未变时复用原 57 场景证据，不为纯文案与素材调整重复运行产品测试。README 的两张本地 PNG 来自同一张用户提供的 Net.Coffee 页面截图，第二张是详情裁剪；只做本地确定性遮挡与裁剪，图中数值保留原显示，未由本项目复测。已核遮挡外 RGBA 像素一致、遮挡不透明、详情与对应裁剪一致、原件未变及输出元数据脱敏。这些检查与本地文档渲染不证明真实网络、官方账号状态或本工具解封效果。禁止为展示示例自动进入第三方检测页面或执行其检测脚本。

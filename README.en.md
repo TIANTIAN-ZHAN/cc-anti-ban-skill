@@ -46,21 +46,23 @@ Installation stops at build and help. Appeals remain drafts unless sending/submi
 
 ## Reference pages
 
-These are three Net.Coffee references. The first two images are **static share covers from the original site, not test reports, this tool's UI or measured results**. The third uses a text preview. Thanks to Net.Coffee for the interface and information-design references; its scoring service is not integrated here.
+The first two images are views of **one user-provided Net.Coffee screenshot, with identifying information redacted**; the second is a detail crop. Values retain the original screenshot's display and were not retested by this project. They do not demonstrate this tool's effects or determine an Anthropic account's status. The third item uses a text preview. Thanks to Net.Coffee for the interface and information-design references; its scoring service is not integrated here.
 
 ### 01 · Claude AI IP risk check
 
-<a href="https://ip.net.coffee/claude/"><img src="https://ip.net.coffee/og-image-claude.png" alt="Net.Coffee Claude share cover, not a test report" width="600"></a>
+<a href="https://ip.net.coffee/claude/"><img src="docs/assets/netcoffee-user-screenshot-redacted.png" alt="User-provided Net.Coffee Claude page screenshot with IP and other identifying information redacted" width="600"></a>
+
+User-provided screenshot, redacted. The original framing is preserved; the source did not include the complete webpage.
 
 [Open the Claude reference →](https://ip.net.coffee/claude/) · Third-party page; opening it may start checks.
 
 A reference for how the site organizes environment signals, not an Anthropic account-status determination.
 
-### 02 · IP / network information
+### 02 · Same-image detail: IP attributes and security checks
 
-<a href="https://ip.net.coffee/ip/"><img src="https://ip.net.coffee/og-image.png" alt="Net.Coffee general share cover, not a test report" width="600"></a>
+<a href="https://ip.net.coffee/claude/"><img src="docs/assets/netcoffee-user-screenshot-detail.png" alt="Detail crop of the IP attributes and security cards from the same redacted Net.Coffee screenshot" width="600"></a>
 
-[Open the IP reference →](https://ip.net.coffee/ip/) · Third-party page; opening it may start checks.
+A crop of the two lower cards in the same screenshot, not another measurement. [Screenshot source →](https://ip.net.coffee/claude/) · [IP reference (separate page) →](https://ip.net.coffee/ip/). Opening third-party pages may start checks.
 
 Network labels cannot establish a person's actual location or service eligibility.
 
@@ -70,7 +72,7 @@ Network labels cannot establish a person's actual location or service eligibilit
 >
 > Third-party topics: IP, DNS, IPv6 and traffic routing for the Claude Code environment. Read alongside the other references; use [official Claude Code documentation](https://code.claude.com/docs/en/network-config) for applicable configuration.
 
-Third-party pages may automatically collect IP/DNS/WebRTC/device information. Viewing a cover or reading a guide does not authorize running those checks. Images use original-site URLs; see [NOTICE](NOTICE.md) for attribution and rights boundaries.
+Third-party pages may automatically collect IP/DNS/WebRTC/device information. Viewing the local redacted images or reading a guide does not authorize running those checks. Only the redacted derivatives authorized by the user are stored here; see [NOTICE](NOTICE.md) for attribution and rights boundaries.
 
 ## The included local tool
 

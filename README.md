@@ -67,21 +67,23 @@ Skill 会按请求选择安装、自查、报告解释或申诉准备。没有�
 
 ## 参考页面示例
 
-下面是 Net.Coffee 的三个参考入口。前两张为**原站静态分享封面，不是检测报告、本工具 UI 或实测结果**；第三项用文字预览。感谢 Net.Coffee 提供界面与信息组织参考，本项目未接入其评分服务。
+前两张图来自用户提供的**同一张 Net.Coffee 页面截图，已脱敏**；第二张为详情裁剪。图中数值保留原图显示，未由本项目复测，不代表本工具效果或 Anthropic 账号判定。第三项用文字预览。感谢 Net.Coffee 提供界面与信息组织参考，本项目未接入其评分服务。
 
 ### 01 · Claude AI IP 风险检测
 
-<a href="https://ip.net.coffee/claude/"><img src="https://ip.net.coffee/og-image-claude.png" alt="Net.Coffee Claude 主题官方分享封面，非检测报告" width="600"></a>
+<a href="https://ip.net.coffee/claude/"><img src="docs/assets/netcoffee-user-screenshot-redacted.png" alt="用户提供的 Net.Coffee Claude 页面截图，IP 等识别信息已脱敏" width="600"></a>
+
+用户提供截图（已脱敏）；保留原截图范围，原图未包含完整网页。
 
 [打开 Claude 检测参考 →](https://ip.net.coffee/claude/) · 第三方页面，打开可能自动检测。
 
 参考它如何组织 Claude 使用环境的信号；分数不代表 Anthropic 的账号判定。
 
-### 02 · IP / 网络信息
+### 02 · 同图详情：IP 属性与安全检测
 
-<a href="https://ip.net.coffee/ip/"><img src="https://ip.net.coffee/og-image.png" alt="Net.Coffee 通用官方分享封面，非检测报告" width="600"></a>
+<a href="https://ip.net.coffee/claude/"><img src="docs/assets/netcoffee-user-screenshot-detail.png" alt="同一张 Net.Coffee 脱敏截图中 IP 属性与安全检测两卡的详情裁剪" width="600"></a>
 
-[打开 IP 信息参考 →](https://ip.net.coffee/ip/) · 第三方页面，打开可能自动检测。
+同一截图下方两卡的裁剪，不是另一次检测。[截图来源 →](https://ip.net.coffee/claude/) · [IP 信息参考（另页）→](https://ip.net.coffee/ip/)；打开第三方页面可能自动检测。
 
 用于了解第三方展示的网络信息类别；不能用出口标签替代本人真实地区与使用资格。
 
@@ -91,7 +93,7 @@ Skill 会按请求选择安装、自查、报告解释或申诉准备。没有�
 >
 > 第三方话题预览：IP、DNS、IPv6、分流等 Claude Code 使用环境说明，可与前两项对照阅读；具体配置以 [Claude Code 官方文档](https://code.claude.com/docs/en/network-config) 为准。
 
-第三方站点可能自动采集 IP/DNS/WebRTC/设备信息。看封面与读指南不等于运行检测；由用户自行决定是否打开原站。分享图直接引用原站 URL，权利与来源见 [NOTICE](NOTICE.md)。
+第三方站点可能自动采集 IP/DNS/WebRTC/设备信息。查看本地脱敏图与阅读指南不等于授权运行检测；由用户自行决定是否打开原站。仅保存用户授权的脱敏衍生图，权利与来源见 [NOTICE](NOTICE.md)。
 
 ## 附带的本地工具能做什么
 
