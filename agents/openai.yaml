@@ -1,3 +1,3 @@
 interface:
-  display_name: "Claude 环境审查"
-  short_description: "本地证据评分与一次确认后的新会话代理应用，保留实际路由和模型未知边界"
+  display_name: "Claude 环境证据"
+  short_description: "看清 Claude Code 安装、配置与代理证据；按 INSTALL.md 安装，检查另行授权"

@@ -30,7 +30,7 @@ env -i PATH="$PATH" HOME="$cc_check_root/home" TMPDIR="$cc_check_root/tmp" \
 | 批准对象固定、唯一 reaper/根 PID 信号、路径置换及真实假 PTY | [runner 测试](../internal/runner/process_darwin_test.go)、[监督](../internal/runner/supervisor_test.go) |
 | Mach-O raw 命令/范围拒绝、清理 FD/最小删除/还原受阻 | [Mach-O](../internal/runner/macho_test.go)、[清理对象](../internal/runner/artifact_test.go) |
 | manager/API/UI 的 retained 重试、权限与到期 session | [清理 HTTP](../internal/localweb/cleanup_darwin_test.go)、[会话到期](../internal/localweb/session_expiry_test.go) |
-| 本次构建失败或目录输入无效不启动、成功后正确项目 cwd、父 shell 状态保留、Skill 安装拒绝已有目标 | [README 命令测试](../cmd/cc-health/readme_darwin_test.go) |
+| 直接抽取 INSTALL 命令：构建/帮助门禁、项目 cwd、父 shell 状态、Skill 已有目标/悬空链接/重复安装拒绝 | [安装命令测试](../cmd/cc-health/readme_darwin_test.go) |
 
 ## 如何解释结果
 
@@ -41,3 +41,9 @@ env -i PATH="$PATH" HOME="$cc_check_root/home" TMPDIR="$cc_check_root/tmp" \
 ## 未作保证
 
 未验收真实 Claude 账号、订阅、额度、模型、真实代理或组织策略。没有任意同 UID 权限隔离、完整进程树回滚、内存立即擦除、跨崩溃恢复、正式 Developer ID/公证、跨系统发行保证。恶意解释器/词法 alias/trap/PS4 在脚本门禁之前的执行不能由 source 文件补救。
+
+## 产品首页与安装入口验证
+
+[INSTALL.md](../INSTALL.md) 是可执行命令的唯一权威入口。`TestReadme*` 名称保留便于复用原命令；测试现在直接读取 INSTALL 的 `build-only`、`start-ui`、`codex-skill` 代码块。原 42 个场景继续覆盖构建/项目输入与安装目标保护，新增 15 个场景覆盖只构建并显示帮助、构建或帮助失败不链接 Skill，以及父 shell 保持不变。所有 CLI 均为假原生程序，未安装真实 Skill。
+
+README 中的当前界面图来自 `internal/localweb/server_test.go` 的 `TestUIFixture`，使用虚构环境数据，仅通过回环访问；它不是旧静态 demo，也不是实机检查证据。首页渲染只能证明展示与链接检查，不代表各 Agent 客户端或真实 Claude 已验收。

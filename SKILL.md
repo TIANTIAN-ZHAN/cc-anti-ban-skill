@@ -3,13 +3,15 @@ name: cc-anti-ban-skill
 description: 审查 macOS + Claude Code 的安装、基础配置、代理和受控参考链路证据，解释覆盖率与参考评分；明确确认后可仅为支持的原生 Claude 新会话设置回环 HTTP 代理。不修改系统配置，不提供防封、恢复账户或模型可用性保证。
 ---
 
-# Claude 环境审查
+# Claude 环境证据
 
 本项目独立于 Anthropic。工具可在 Claude 不工作时独立启动，但参考检查成功不等于真实 Claude 路由、账号或模型可用。
 
 ## 安装与入口
 
-保留整个仓库，不要只复制此文件：构建需要 `go.mod`、`cmd/`、`internal/`、`scripts/`，解释和授权依赖 `references/`。可选安装方式与可直接运行的步骤见 [README](README.md)。安装 Skill 不构成真实体检、外联或启动 Claude 的授权。
+保留整个仓库，不要只复制此文件：构建需要 `go.mod`、`cmd/`、`internal/`、`scripts/`，解释和授权依赖 `references/`。权威安装步骤与可选 Codex Skill 链接见 [INSTALL.md](INSTALL.md)，产品介绍见 [README](README.md)。安装到本次构建成功并通过 `--help` 为止，不构成真实体检、外联或启动 Claude 的授权，不用 `serve`/`check` 验收安装。
+
+由 Codex、Kimi Code 或具备本地文件/终端工具的其他独立 Coding Agent 执行；Claude Code 是被检查对象，不向 `.claude/skills` 安装本诊断 Skill。使用 DeepSeek 等模型的 Agent 也必须实际具备这些工具。不要把官方 Skill 目录说明当作本项目已完成各客户端兼容验收。
 
 先辨别用户要看静态演示、解释已有脱敏报告，还是执行真实检查。使用当前授权；开发/fake 测试授权不自动恢复真实操作的暂停。实机动作须先给出实际读取范围或操作清单，不能为验收而自行操作用户环境。
 

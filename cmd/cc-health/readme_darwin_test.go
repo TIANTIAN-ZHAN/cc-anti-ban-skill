@@ -14,10 +14,10 @@ import (
 	"testing"
 )
 
-// Exercise the actual README blocks and build-safe script with isolated HOME,
+// Exercise the actual INSTALL blocks and build-safe script with isolated HOME,
 // paths and harmless native fixtures. No real Claude, config or network is used.
 func TestReadmeConditionalBuildStartsChosenProject(t *testing.T) {
-	block := readmeZshBlock(t, "下面整段从工具仓库根目录运行。")
+	block := readmeZshBlock(t, "<!-- command: start-ui -->")
 	script, err := os.ReadFile(filepath.Join("..", "..", "scripts", "build-safe.zsh"))
 	if err != nil {
 		t.Fatal(err)
@@ -104,7 +104,8 @@ done
 }
 
 func TestReadmeSkillInstallPreservesExistingTargets(t *testing.T) {
-	block := readmeZshBlock(t, "## 可选 Skill 安装")
+	oldBinary, fresh := readmeNativeFixtures(t)
+	block := readmeZshBlock(t, "<!-- command: codex-skill -->")
 	for _, kind := range []string{"missing_parents", "missing_target", "file", "directory", "directory_symlink", "file_symlink", "dangling_symlink", "parent_file"} {
 		t.Run(kind, func(t *testing.T) {
 			for _, state := range []string{"preset", "unset", "mixed"} {
@@ -149,10 +150,13 @@ func TestReadmeSkillInstallPreservesExistingTargets(t *testing.T) {
 						}
 						readmeWrite(t, filepath.Dir(target), []byte("parent is a file\n"), 0600)
 					}
+					readmeBuildSetup(t, root, fakeRepo, oldBinary)
+					receipt := filepath.Join(root, "launch-receipt")
 					before := readmeTree(t, root)
 					run := func() error {
 						cmd := exec.Command("/bin/zsh", "-f", "-c", readmeParentShell(block, state))
-						cmd.Dir, cmd.Env = fakeRepo, env
+						cmd.Dir = fakeRepo
+						cmd.Env = append(env, "CC_BUILD_MODE=success", "CC_NEW_BINARY="+fresh, "CC_LAUNCH_RECEIPT="+receipt)
 						out, err := cmd.CombinedOutput()
 						readmeParentPreserved(t, out)
 						return err
@@ -167,6 +171,7 @@ func TestReadmeSkillInstallPreservesExistingTargets(t *testing.T) {
 						if err != nil || physicalErr != nil || link != physical {
 							t.Fatalf("wrong Skill link: %q, %v, %v", link, err, physicalErr)
 						}
+						readmeAssertLaunch(t, receipt, fakeRepo, "--help")
 						before = readmeTree(t, root)
 						if err := run(); err == nil {
 							t.Fatal("repeated installation reported success")
@@ -183,33 +188,175 @@ func TestReadmeSkillInstallPreservesExistingTargets(t *testing.T) {
 	}
 }
 
+// Installation must stop at help. The existing chosen-project and target
+// preservation matrices above retain their original 18 + 24 leaf scenarios.
+func TestReadmeBuildOnlyShowsHelp(t *testing.T) {
+	block := readmeZshBlock(t, "<!-- command: build-only -->")
+	oldBinary, fresh := readmeNativeFixtures(t)
+	for _, mode := range []string{"success", "fail"} {
+		t.Run(mode, func(t *testing.T) {
+			for _, state := range []string{"preset", "unset", "mixed"} {
+				t.Run(state, func(t *testing.T) {
+					root := t.TempDir()
+					env := readmeFixtureEnv(t, root)
+					repo := filepath.Join(root, "repository with spaces")
+					readmeBuildSetup(t, root, repo, oldBinary)
+					receipt := filepath.Join(root, "launch-receipt")
+					cmd := exec.Command("/bin/zsh", "-f", "-c", readmeParentShell(block, state))
+					cmd.Dir = repo
+					cmd.Env = append(env, "CC_BUILD_MODE="+mode, "CC_NEW_BINARY="+fresh, "CC_LAUNCH_RECEIPT="+receipt)
+					out, err := cmd.CombinedOutput()
+					readmeParentPreserved(t, out)
+					if mode == "success" {
+						if err != nil {
+							t.Fatalf("build-only: %v %s", err, out)
+						}
+						readmeAssertLaunch(t, receipt, repo, "--help")
+					} else {
+						if err == nil {
+							t.Fatal("failed build reported success")
+						}
+						readmeAssertNotLaunched(t, receipt)
+						after, err := os.ReadFile(filepath.Join(repo, ".build", "cc-health"))
+						if err != nil || sha256.Sum256(after) != sha256.Sum256(oldBinary) {
+							t.Fatal("failed build replaced old binary")
+						}
+					}
+				})
+			}
+		})
+	}
+}
+
+func TestReadmeSkillRequiresBuildAndHelp(t *testing.T) {
+	block := readmeZshBlock(t, "<!-- command: codex-skill -->")
+	oldBinary, fresh := readmeNativeFixtures(t)
+	for _, mode := range []string{"build_fail", "help_fail", "success"} {
+		t.Run(mode, func(t *testing.T) {
+			for _, state := range []string{"preset", "unset", "mixed"} {
+				t.Run(state, func(t *testing.T) {
+					root := t.TempDir()
+					env := readmeFixtureEnv(t, root)
+					repo := filepath.Join(root, "repository with spaces")
+					readmeBuildSetup(t, root, repo, oldBinary)
+					receipt := filepath.Join(root, "launch-receipt")
+					buildMode := "success"
+					if mode == "build_fail" {
+						buildMode = "fail"
+					}
+					if mode == "help_fail" {
+						env = append(env, "CC_HELP_FAIL=1")
+					}
+					cmd := exec.Command("/bin/zsh", "-f", "-c", readmeParentShell(block, state))
+					cmd.Dir = repo
+					cmd.Env = append(env, "CC_BUILD_MODE="+buildMode, "CC_NEW_BINARY="+fresh, "CC_LAUNCH_RECEIPT="+receipt)
+					out, err := cmd.CombinedOutput()
+					readmeParentPreserved(t, out)
+					target := filepath.Join(root, "home", ".agents", "skills", "cc-anti-ban-skill")
+					if mode == "success" {
+						if err != nil {
+							t.Fatalf("install: %v %s", err, out)
+						}
+						link, err := os.Readlink(target)
+						physical, physicalErr := filepath.EvalSymlinks(repo)
+						if err != nil || physicalErr != nil || link != physical {
+							t.Fatal("wrong skill target")
+						}
+					} else {
+						if err == nil {
+							t.Fatal("failed prerequisite installed skill")
+						}
+						if _, err := os.Lstat(target); !os.IsNotExist(err) {
+							t.Fatal("failed prerequisite created a link")
+						}
+						if _, err := os.Lstat(filepath.Join(root, "home", ".agents")); !os.IsNotExist(err) {
+							t.Fatal("failed prerequisite created skill directories")
+						}
+					}
+					if mode == "build_fail" {
+						readmeAssertNotLaunched(t, receipt)
+						after, err := os.ReadFile(filepath.Join(repo, ".build", "cc-health"))
+						if err != nil || sha256.Sum256(after) != sha256.Sum256(oldBinary) {
+							t.Fatal("failed build replaced old binary")
+						}
+					} else {
+						readmeAssertLaunch(t, receipt, repo, "--help")
+					}
+				})
+			}
+		})
+	}
+}
+
+func readmeBuildSetup(t *testing.T, root, repo string, oldBinary []byte) {
+	t.Helper()
+	for _, p := range []string{filepath.Join(repo, "scripts"), filepath.Join(repo, ".build")} {
+		if err := os.MkdirAll(p, 0700); err != nil {
+			t.Fatal(err)
+		}
+	}
+	script, err := os.ReadFile(filepath.Join("..", "..", "scripts", "build-safe.zsh"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	readmeWrite(t, filepath.Join(repo, "scripts", "build-safe.zsh"), script, 0600)
+	readmeWrite(t, filepath.Join(repo, ".build", "cc-health"), oldBinary, 0700)
+	readmeWrite(t, filepath.Join(root, "bin", "go"), []byte(`#!/bin/sh
+if [ "$CC_BUILD_MODE" = fail ]; then exit 9; fi
+output=
+while [ "$#" -gt 0 ]; do
+  if [ "$1" = -o ]; then output=$2; shift; fi
+  shift
+done
+[ -n "$output" ] || exit 10
+/bin/cp "$CC_NEW_BINARY" "$output"
+`), 0700)
+}
+
+func readmeAssertLaunch(t *testing.T, receipt, cwd, argument string) {
+	t.Helper()
+	data, err := os.ReadFile(receipt)
+	physical, physicalErr := filepath.EvalSymlinks(cwd)
+	if err != nil || physicalErr != nil || string(data) != "fresh\n"+physical+"\n"+argument+"\n" {
+		t.Fatalf("wrong executable, cwd or argument: %q, %v, %v", data, err, physicalErr)
+	}
+}
+
+func readmeAssertNotLaunched(t *testing.T, receipt string) {
+	t.Helper()
+	if _, err := os.Stat(receipt); !os.IsNotExist(err) {
+		t.Fatal("failed build launched an executable")
+	}
+}
+
 func readmeZshBlock(t *testing.T, marker string) string {
 	t.Helper()
-	doc, err := os.ReadFile(filepath.Join("..", "..", "README.md"))
+	doc, err := os.ReadFile(filepath.Join("..", "..", "INSTALL.md"))
 	if err != nil {
 		t.Fatal(err)
 	}
 	text := string(doc)
 	if strings.Count(text, marker) != 1 {
-		t.Fatalf("README block marker missing or ambiguous: %s", marker)
+		t.Fatalf("INSTALL block marker missing or ambiguous: %s", marker)
 	}
 	text = text[strings.Index(text, marker)+len(marker):]
 	const fence = "```zsh\n"
 	start := strings.Index(text, fence)
 	if start < 0 {
-		t.Fatal("README zsh block missing")
+		t.Fatal("INSTALL zsh block missing")
 	}
 	text = text[start+len(fence):]
 	end := strings.Index(text, "\n```")
 	if end < 0 {
-		t.Fatal("README code fence missing")
+		t.Fatal("INSTALL code fence missing")
 	}
 	return text[:end]
 }
 
 func readmeParentShell(block, state string) string {
-	setup := "cc_readme_test_cwd=$PWD\n"
+	setup := "cc_readme_test_cwd=$PWD\nset -- 'inherited output with spaces' 'second inherited argument'\n"
 	checks := "[[ $PWD == \"$cc_readme_test_cwd\" ]] || exit 91\n"
+	checks += "[[ $# == 2 && $1 == 'inherited output with spaces' && $2 == 'second inherited argument' ]] || exit 94\n"
 	for i, name := range []string{"cc_health_repo", "cc_health_project", "cc_health_skill_target"} {
 		if state == "unset" || (state == "mixed" && i == 1) {
 			setup += "unset -- " + name + "\n"
@@ -257,7 +404,8 @@ int main(int argc,char **argv) {
  if (!receipt || !getcwd(cwd,sizeof(cwd))) return 80;
  FILE *f=fopen(receipt,"w"); if(!f)return 81;
  fprintf(f,"` + tag + `\n%s\n%s\n",cwd,argc>1?argv[1]:"");
- return fclose(f)==0 ? 0 : 82;
+ if (fclose(f)!=0) return 82;
+ return getenv("CC_HELP_FAIL") ? 83 : 0;
 }`
 		readmeWrite(t, source, []byte(code), 0600)
 		cmd := exec.Command("/usr/bin/clang", "-mmacosx-version-min=13.0", source, "-o", filepath.Join(root, tag))
